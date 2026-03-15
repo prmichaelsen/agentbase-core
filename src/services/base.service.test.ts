@@ -1,9 +1,14 @@
 import { describe, it, expect, vi } from 'vitest'
-import { BaseService, type Logger } from './base.service.js'
+import { BaseService, ServiceState, type Logger } from './base.service.js'
 
 class TestService extends BaseService<{ port: number }> {
   constructor(config: { port: number }, logger: Logger) {
     super(config, logger)
+  }
+
+  // Expose ensureInitialized for testing
+  public checkInitialized() {
+    this.ensureInitialized()
   }
 }
 
@@ -16,10 +21,12 @@ class CustomLifecycleService extends BaseService<{ name: string }> {
   }
 
   async initialize(): Promise<void> {
+    await super.initialize()
     this.initialized = true
   }
 
   async shutdown(): Promise<void> {
+    await super.shutdown()
     this.shutDown = true
   }
 }
@@ -47,12 +54,12 @@ describe('BaseService', () => {
     expect(svc['logger']).toBe(logger)
   })
 
-  it('initialize() is callable and no-op by default', async () => {
+  it('initialize() is callable', async () => {
     const svc = new TestService({ port: 3000 }, mockLogger())
     await expect(svc.initialize()).resolves.toBeUndefined()
   })
 
-  it('shutdown() is callable and no-op by default', async () => {
+  it('shutdown() is callable', async () => {
     const svc = new TestService({ port: 3000 }, mockLogger())
     await expect(svc.shutdown()).resolves.toBeUndefined()
   })
@@ -66,8 +73,58 @@ describe('BaseService', () => {
 
   it('overridden shutdown() is called', async () => {
     const svc = new CustomLifecycleService({ name: 'test' }, mockLogger())
+    await svc.initialize()
     expect(svc.shutDown).toBe(false)
     await svc.shutdown()
     expect(svc.shutDown).toBe(true)
+  })
+})
+
+describe('ServiceState', () => {
+  it('starts as Uninitialized', () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    expect(svc.getState()).toBe(ServiceState.Uninitialized)
+  })
+
+  it('transitions to Initialized after initialize()', async () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    await svc.initialize()
+    expect(svc.getState()).toBe(ServiceState.Initialized)
+  })
+
+  it('transitions to ShutDown after shutdown()', async () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    await svc.initialize()
+    await svc.shutdown()
+    expect(svc.getState()).toBe(ServiceState.ShutDown)
+  })
+
+  it('custom lifecycle sets state correctly', async () => {
+    const svc = new CustomLifecycleService({ name: 'test' }, mockLogger())
+    expect(svc.getState()).toBe(ServiceState.Uninitialized)
+    await svc.initialize()
+    expect(svc.getState()).toBe(ServiceState.Initialized)
+    await svc.shutdown()
+    expect(svc.getState()).toBe(ServiceState.ShutDown)
+  })
+})
+
+describe('ensureInitialized', () => {
+  it('throws when not initialized', () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    expect(() => svc.checkInitialized()).toThrow('TestService is not initialized')
+  })
+
+  it('does not throw when initialized', async () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    await svc.initialize()
+    expect(() => svc.checkInitialized()).not.toThrow()
+  })
+
+  it('throws after shutdown', async () => {
+    const svc = new TestService({ port: 3000 }, mockLogger())
+    await svc.initialize()
+    await svc.shutdown()
+    expect(() => svc.checkInitialized()).toThrow('TestService is not initialized')
   })
 })
