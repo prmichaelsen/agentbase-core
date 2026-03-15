@@ -19,7 +19,7 @@ milestones:
     started: 2026-03-15
     completed: null
     estimated_weeks: 2
-    tasks_completed: 6
+    tasks_completed: 7
     tasks_total: 11
     notes: |
       Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
@@ -82,12 +82,12 @@ tasks:
 
     - id: task-7
       name: "Tests: Auth (session, guards, helpers)"
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-15T19:36:00Z
       file: agent/tasks/milestone-1-core-infrastructure/task-7-tests-auth.md
       estimated_hours: 3
-      completed_date: null
-      notes: Server-side auth, guards return Response objects, admin email check
+      completed_date: 2026-03-15T19:37:30Z
+      notes: "22 tests: helpers(9), session(8), guards(9) — vi.hoisted() for mock hoisting"
 
     - id: task-8
       name: "Tests: Utilities (format-time, linkify, uuid)"
