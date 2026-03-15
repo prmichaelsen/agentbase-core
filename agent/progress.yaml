@@ -6,7 +6,8 @@ project:
   version: 0.1.1
   started: 2026-03-15
   status: in_progress
-  current_milestone: M3
+  current_milestone: done
+  status: completed
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
 
@@ -40,12 +41,12 @@ milestones:
   - id: M3
     name: High Pattern Compliance
     file: agent/milestones/milestone-3-high-pattern-compliance.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-15
+    completed: 2026-03-15
     estimated_weeks: 1
-    tasks_completed: 0
+    tasks_completed: 3
     tasks_total: 3
     notes: |
       Service interfaces + state tracking. Depends on M2. (80% -> 85%).
@@ -53,12 +54,12 @@ milestones:
   - id: M4
     name: Medium Pattern Compliance
     file: agent/milestones/milestone-4-medium-pattern-compliance.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-15
+    completed: 2026-03-15
     estimated_weeks: 1
-    tasks_completed: 0
+    tasks_completed: 8
     tasks_total: 8
     notes: |
       Result type, logging cleanup, coverage thresholds, branded primitives, config validation, throwOnError, agent index. Porting wins from remember-core.
