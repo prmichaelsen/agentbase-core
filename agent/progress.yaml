@@ -6,7 +6,7 @@ project:
   version: 0.1.1
   started: 2026-03-15
   status: in_progress
-  current_milestone: M2
+  current_milestone: M3
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
 
@@ -27,12 +27,12 @@ milestones:
   - id: M2
     name: Critical Pattern Compliance
     file: agent/milestones/milestone-2-critical-pattern-compliance.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-15
+    completed: 2026-03-15
     estimated_weeks: 1
-    tasks_completed: 0
+    tasks_completed: 4
     tasks_total: 4
     notes: |
       Error type hierarchy + guard refactor. Highest-impact pattern compliance changes (65% -> 80%).

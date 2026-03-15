@@ -18,6 +18,7 @@ vi.spyOn(console, 'error').mockImplementation(() => {})
 vi.spyOn(console, 'debug').mockImplementation(() => {})
 
 import { requireAuth, requireAdmin, isAdmin } from './guards.js'
+import { UnauthorizedError, ForbiddenError } from '../../errors/index.js'
 
 function makeRequest(cookie?: string): Request {
   const headers = new Headers()
@@ -39,18 +40,17 @@ describe('requireAuth', () => {
     vi.clearAllMocks()
   })
 
-  it('returns null (pass) for authenticated request', async () => {
+  it('resolves (no throw) for authenticated request', async () => {
     mockVerifySessionCookie.mockResolvedValue(decodedToken)
-    const result = await requireAuth(makeRequest('session=valid'))
-    expect(result).toBeNull()
+    await expect(requireAuth(makeRequest('session=valid'))).resolves.toBeUndefined()
   })
 
-  it('returns 401 for unauthenticated request', async () => {
-    const result = await requireAuth(makeRequest())
-    expect(result).toBeInstanceOf(Response)
-    expect(result!.status).toBe(401)
-    const body = await result!.json()
-    expect(body.error).toContain('Unauthorized')
+  it('throws UnauthorizedError for unauthenticated request', async () => {
+    await expect(requireAuth(makeRequest())).rejects.toThrow(UnauthorizedError)
+  })
+
+  it('thrown error has correct message', async () => {
+    await expect(requireAuth(makeRequest())).rejects.toThrow('Authentication required')
   })
 })
 
@@ -59,36 +59,28 @@ describe('requireAdmin', () => {
     vi.clearAllMocks()
   })
 
-  it('returns null for admin email', async () => {
+  it('resolves for admin email', async () => {
     mockVerifySessionCookie.mockResolvedValue(decodedToken)
-    const result = await requireAdmin(makeRequest('session=valid'), 'admin@example.com,other@ex.com')
-    expect(result).toBeNull()
+    await expect(requireAdmin(makeRequest('session=valid'), 'admin@example.com,other@ex.com')).resolves.toBeUndefined()
   })
 
-  it('returns 401 for unauthenticated request', async () => {
-    const result = await requireAdmin(makeRequest())
-    expect(result).toBeInstanceOf(Response)
-    expect(result!.status).toBe(401)
+  it('throws UnauthorizedError for unauthenticated request', async () => {
+    await expect(requireAdmin(makeRequest())).rejects.toThrow(UnauthorizedError)
   })
 
-  it('returns 403 for non-admin authenticated user', async () => {
+  it('throws ForbiddenError for non-admin authenticated user', async () => {
     mockVerifySessionCookie.mockResolvedValue({
       ...decodedToken,
       email: 'regular@example.com',
     })
-    const result = await requireAdmin(makeRequest('session=valid'), 'admin@example.com')
-    expect(result).toBeInstanceOf(Response)
-    expect(result!.status).toBe(403)
-    const body = await result!.json()
-    expect(body.error).toContain('Forbidden')
+    await expect(requireAdmin(makeRequest('session=valid'), 'admin@example.com')).rejects.toThrow(ForbiddenError)
   })
 
   it('reads OWNER_EMAILS from env when not passed', async () => {
     const original = process.env.OWNER_EMAILS
     process.env.OWNER_EMAILS = 'admin@example.com'
     mockVerifySessionCookie.mockResolvedValue(decodedToken)
-    const result = await requireAdmin(makeRequest('session=valid'))
-    expect(result).toBeNull()
+    await expect(requireAdmin(makeRequest('session=valid'))).resolves.toBeUndefined()
     process.env.OWNER_EMAILS = original
   })
 })
