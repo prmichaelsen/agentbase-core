@@ -479,6 +479,11 @@ export class UsageSvc {
   }
 }
 
+// ─── Storage ────────────────────────────────────────
+// NOTE: File uploads use a WebSocket-based signed URL flow (GET /api/storage/ws),
+// not a simple REST POST. This is out of scope for the REST client SDK.
+// Implement upload flows directly using the WebSocket endpoint in your application.
+
 // ─── Jobs ───────────────────────────────────────────
 
 export class JobsSvc {
