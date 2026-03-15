@@ -1,0 +1,70 @@
+{
+  "name": "@prmichaelsen/agentbase-core",
+  "version": "0.1.0",
+  "description": "Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./services": {
+      "import": "./dist/services/index.js",
+      "types": "./dist/services/index.d.ts"
+    },
+    "./lib": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    },
+    "./lib/auth": {
+      "import": "./dist/lib/auth/index.js",
+      "types": "./dist/lib/auth/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "agentbase",
+    "service",
+    "firebase",
+    "auth"
+  ],
+  "author": "prmichaelsen",
+  "license": "MIT",
+  "peerDependencies": {
+    "@prmichaelsen/firebase-admin-sdk-v8": ">=2.0.0",
+    "firebase": ">=10.0.0",
+    "jsonwebtoken": ">=9.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@prmichaelsen/firebase-admin-sdk-v8": {
+      "optional": true
+    },
+    "firebase": {
+      "optional": true
+    },
+    "jsonwebtoken": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@prmichaelsen/firebase-admin-sdk-v8": "^2.8.0",
+    "firebase": "^10.14.1",
+    "jsonwebtoken": "^9.0.3",
+    "@types/jsonwebtoken": "^9.0.0",
+    "typescript": "^5.5.0"
+  }
+}

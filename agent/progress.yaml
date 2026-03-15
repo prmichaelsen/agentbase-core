@@ -1,0 +1,179 @@
+# Project Progress Tracking
+# @prmichaelsen/agentbase-core
+
+project:
+  name: agentbase-core
+  version: 0.1.0
+  started: 2026-03-15
+  status: in_progress
+  current_milestone: M1
+  description: |
+    Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
+
+milestones:
+  - id: M1
+    name: Core Infrastructure
+    file: agent/milestones/milestone-1-core-infrastructure.md
+    status: in_progress
+    progress: 80
+    started: 2026-03-15
+    completed: null
+    estimated_weeks: 2
+    tasks_completed: 0
+    tasks_total: 11
+    notes: |
+      Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
+
+tasks:
+  milestone_1:
+    - id: task-1
+      name: Build Verification
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-1-build-verification.md
+      estimated_hours: 1
+      completed_date: null
+      notes: Verify tsc compiles cleanly, dist/ structure correct
+
+    - id: task-2
+      name: Test Infrastructure Setup
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-2-test-infrastructure.md
+      estimated_hours: 2
+      completed_date: null
+      notes: Set up vitest, mock setup for Firebase peer deps
+
+    - id: task-3
+      name: "Tests: BaseService + ConfirmationTokenService"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-3-tests-services.md
+      estimated_hours: 2
+      completed_date: null
+      notes: Unit tests for abstract base class and token service
+
+    - id: task-4
+      name: "Tests: Logger & Sanitization"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-4-tests-logger.md
+      estimated_hours: 2
+      completed_date: null
+      notes: Test createLogger, sanitize*, pre-configured loggers
+
+    - id: task-5
+      name: "Tests: Firebase Admin Wrapper"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-5-tests-firebase-admin.md
+      estimated_hours: 1
+      completed_date: null
+      notes: Mock admin SDK, test initFirebaseAdmin
+
+    - id: task-6
+      name: "Tests: Firebase Client Wrapper"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-6-tests-firebase-client.md
+      estimated_hours: 3
+      completed_date: null
+      notes: 13 functions, singleton pattern, auth flows
+
+    - id: task-7
+      name: "Tests: Auth (session, guards, helpers)"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-7-tests-auth.md
+      estimated_hours: 3
+      completed_date: null
+      notes: Server-side auth, guards return Response objects, admin email check
+
+    - id: task-8
+      name: "Tests: Utilities (format-time, linkify, uuid)"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-8-tests-utilities.md
+      estimated_hours: 2
+      completed_date: null
+      notes: Pure functions, linkify has complex regex with protected zones
+
+    - id: task-9
+      name: "Tests: Rate Limiter"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-9-tests-rate-limiter.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: Mock Cloudflare rate limiter binding, fail-open behavior
+
+    - id: task-10
+      name: npm Publish Setup & Verification
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-10-npm-publish.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: Verify package.json, dry-run publish, test imports
+
+    - id: task-11
+      name: API Documentation / README
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-1-core-infrastructure/task-11-api-documentation.md
+      estimated_hours: 2
+      completed_date: null
+      notes: README with all public exports, usage examples, peer deps
+
+documentation:
+  design_documents: 0
+  milestone_documents: 1
+  pattern_documents: 0
+  task_documents: 11
+  last_updated: 2026-03-15
+
+progress:
+  planning: 100
+  implementation: 80
+  testing: 0
+  documentation: 10
+  overall: 50
+
+recent_work:
+  - date: 2026-03-15
+    description: |
+      ACP initialized and M1 planned with 11 granular tasks.
+    items:
+      - "Installed ACP v5.22.0"
+      - "Reviewed project structure and all source files"
+      - "Created milestone-1-core-infrastructure.md"
+      - "Created 11 task documents (build, test infra, 7 test suites, publish, docs)"
+      - "Updated progress.yaml with full task breakdown"
+
+next_steps:
+  - "Task 1: Verify build compiles cleanly"
+  - "Task 2: Set up vitest + mock infrastructure"
+  - "Tasks 3-9: Write unit tests (can parallelize independent suites)"
+  - "Task 10: npm publish dry-run"
+  - "Task 11: Write README"
+
+notes:
+  - Project is a shared library consumed by other agentbase projects
+  - Uses Firebase Admin SDK (custom fork @prmichaelsen/firebase-admin-sdk-v8) and Firebase client SDK as peer deps
+  - Exports via multiple entry points (services, lib, lib/auth, types)
+  - ESM-only (type: module)
+  - Tasks 3-9 (test suites) can be worked in parallel after Task 2 completes
+
+current_blockers: []
+
+dependencies:
+  libraries:
+    - name: "@prmichaelsen/firebase-admin-sdk-v8"
+      version: ">=2.0.0"
+      purpose: Firebase Admin SDK (peer dep, optional)
+    - name: firebase
+      version: ">=10.0.0"
+      purpose: Firebase client SDK (peer dep, optional)
+    - name: jsonwebtoken
+      version: ">=9.0.0"
+      purpose: JWT handling for auth (peer dep, optional)
