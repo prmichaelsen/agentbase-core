@@ -59,19 +59,19 @@ milestones:
     completed: null
     estimated_weeks: 1
     tasks_completed: 0
-    tasks_total: 4
+    tasks_total: 8
     notes: |
-      Result type, logging cleanup, coverage thresholds. (85% -> 92%).
+      Result type, logging cleanup, coverage thresholds, branded primitives, config validation, throwOnError, agent index. Porting wins from remember-core.
 
   - id: M5
     name: Client SDK + OpenAPI
     file: agent/milestones/milestone-5-client-sdk-openapi.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-15
+    completed: 2026-03-15
     estimated_weeks: 3
-    tasks_completed: 0
+    tasks_completed: 11
     tasks_total: 11
     notes: |
       Full client SDK for agentbase.me. OpenAPI 3.1 spec (~135 endpoints), type generation, HTTP transport, SvcClient, AppClient, OAuth helpers.
@@ -250,7 +250,7 @@ tasks:
       file: agent/tasks/milestone-4-medium-pattern-compliance/task-19-result-type.md
       estimated_hours: 1.5
       completed_date: null
-      notes: "Ok/Err discriminated union, type guards, combinators"
+      notes: "Port from remember-core src/types/result.types.ts — Ok/Err union, guards, combinators, tryCatchAsync"
 
     - id: task-20
       name: Replace direct console.log with structured logger
@@ -278,6 +278,42 @@ tasks:
       estimated_hours: 1
       completed_date: null
       notes: "Ok/Err, guards, combinators, tryCatchAsync. Depends: T19"
+
+    - id: task-34
+      name: Branded primitive factory types
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-34-branded-primitives.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "Port from remember-core: toUserId(), toEmailAddress(), toTimestamp() branded types"
+
+    - id: task-35
+      name: Centralized config validation
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-35-config-validation.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "Port from remember-core: loadConfig(), validateConfig(), typed config interfaces"
+
+    - id: task-36
+      name: Add throwOnError() to SdkResponse
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-36-throw-on-error.md
+      estimated_hours: 0.5
+      completed_date: null
+      notes: "Port from remember-core: Supabase-style chainable throwOnError()"
+
+    - id: task-37
+      name: Create agent/index/ governance file
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-37-agent-index.md
+      estimated_hours: 0.5
+      completed_date: null
+      notes: "Port from remember-core: weighted pattern index for AI agent guidance"
 
   milestone_5:
     - id: task-23
