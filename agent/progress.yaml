@@ -19,7 +19,7 @@ milestones:
     started: 2026-03-15
     completed: null
     estimated_weeks: 2
-    tasks_completed: 2
+    tasks_completed: 3
     tasks_total: 11
     notes: |
       Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
@@ -46,12 +46,12 @@ tasks:
 
     - id: task-3
       name: "Tests: BaseService + ConfirmationTokenService"
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-15T19:33:00Z
       file: agent/tasks/milestone-1-core-infrastructure/task-3-tests-services.md
       estimated_hours: 2
-      completed_date: null
-      notes: Unit tests for abstract base class and token service
+      completed_date: 2026-03-15T19:34:00Z
+      notes: "14 tests: 6 BaseService + 8 ConfirmationTokenService, all passing"
 
     - id: task-4
       name: "Tests: Logger & Sanitization"
