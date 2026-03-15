@@ -1,0 +1,1072 @@
+openapi: 3.1.0
+info:
+  title: agentbase.me API
+  version: 1.0.0
+  description: REST API for agentbase.me — social memory platform
+servers:
+  - url: https://agentbase.me
+    description: Production
+  - url: http://localhost:3319
+    description: Local development
+security:
+  - sessionCookie: []
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+    bearerToken:
+      type: http
+      scheme: bearer
+    apiKey:
+      type: apiKey
+      in: header
+      name: Authorization
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+      required: [error]
+    SuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+      required: [success]
+    AuthUser:
+      type: object
+      properties:
+        uid: { type: string }
+        email: { type: string, nullable: true }
+        displayName: { type: string, nullable: true }
+        photoURL: { type: string, nullable: true }
+        emailVerified: { type: boolean }
+        isAnonymous: { type: boolean }
+      required: [uid, emailVerified, isAnonymous]
+    SessionResponse:
+      type: object
+      properties:
+        authenticated: { type: boolean }
+        user: { $ref: '#/components/schemas/AuthUser' }
+      required: [authenticated]
+    OAuthTokenRequest:
+      type: object
+      properties:
+        grant_type: { type: string, enum: [authorization_code, refresh_token, api_token] }
+        code: { type: string }
+        redirect_uri: { type: string }
+        code_verifier: { type: string }
+        refresh_token: { type: string }
+        client_id: { type: string }
+        client_secret: { type: string }
+        api_token: { type: string }
+      required: [grant_type]
+    OAuthTokenResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        token_type: { type: string, enum: [bearer] }
+        expires_in: { type: integer }
+        refresh_token: { type: string }
+        scope: { type: string }
+      required: [access_token, token_type, expires_in]
+    Memory:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        content: { type: string }
+        author_id: { type: string }
+        scope: { type: string, enum: [personal, group, public] }
+        group_id: { type: string, nullable: true }
+        tags: { type: array, items: { type: string } }
+        rating: { type: number, nullable: true }
+        significance: { type: number, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+      required: [id, title, content, author_id, scope]
+    Conversation:
+      type: object
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [dm, group] }
+        participants: { type: array, items: { type: string } }
+        last_message: { type: string, nullable: true }
+        unread_count: { type: integer }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+      required: [id, type]
+    Message:
+      type: object
+      properties:
+        id: { type: string }
+        conversation_id: { type: string }
+        sender_id: { type: string }
+        content: { type: string }
+        role: { type: string, enum: [user, assistant, system] }
+        attachments: { type: array, items: { $ref: '#/components/schemas/MessageAttachment' } }
+        visible_to_user_ids: { type: array, items: { type: string }, nullable: true }
+        created_at: { type: string, format: date-time }
+      required: [id, conversation_id, sender_id, content]
+    MessageAttachment:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        size: { type: integer }
+        type: { type: string }
+        url: { type: string }
+        thumbnail_url: { type: string, nullable: true }
+    Profile:
+      type: object
+      properties:
+        uid: { type: string }
+        username: { type: string, nullable: true }
+        displayName: { type: string, nullable: true }
+        photoURL: { type: string, nullable: true }
+        bio: { type: string, nullable: true }
+        visibility: { type: string, enum: [public, friends, private] }
+      required: [uid]
+    Group:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string, nullable: true }
+        photo_url: { type: string, nullable: true }
+        owner_id: { type: string }
+        member_count: { type: integer }
+        created_at: { type: string, format: date-time }
+      required: [id, name, owner_id]
+    GroupMember:
+      type: object
+      properties:
+        user_id: { type: string }
+        display_name: { type: string, nullable: true }
+        photo_url: { type: string, nullable: true }
+        auth_level: { type: integer }
+        permissions: { $ref: '#/components/schemas/GroupPermissions' }
+        joined_at: { type: string, format: date-time }
+      required: [user_id, auth_level]
+    GroupPermissions:
+      type: object
+      properties:
+        can_read: { type: boolean }
+        can_publish: { type: boolean }
+        can_manage_members: { type: boolean }
+        can_moderate: { type: boolean }
+        can_kick: { type: boolean }
+        can_ban: { type: boolean }
+    Notification:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        type: { type: string }
+        title: { type: string }
+        body: { type: string }
+        conversation_id: { type: string, nullable: true }
+        read: { type: boolean }
+        created_at: { type: string, format: date-time }
+      required: [id, user_id, type, title, body, read]
+    Relationship:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        related_user_id: { type: string }
+        status: { type: string }
+        created_at: { type: string, format: date-time }
+      required: [id, user_id, related_user_id]
+    Board:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        name: { type: string }
+        created_at: { type: string, format: date-time }
+      required: [id, user_id, name]
+    Widget:
+      type: object
+      properties:
+        id: { type: string }
+        board_id: { type: string }
+        type: { type: string }
+        config: { type: object }
+        position: { type: integer }
+      required: [id, board_id, type]
+    ApiToken:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        token: { type: string }
+        created_at: { type: string, format: date-time }
+      required: [id, name]
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    RateLimited:
+      description: Too many requests
+      headers:
+        Retry-After: { schema: { type: integer } }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+
+paths:
+  # Auth
+  /api/auth/login:
+    post:
+      operationId: authLogin
+      tags: [Auth]
+      summary: Create session from Firebase ID token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                idToken: { type: string }
+                captchaToken: { type: string }
+              required: [idToken]
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SuccessResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/auth/logout:
+    post:
+      operationId: authLogout
+      tags: [Auth]
+      summary: Destroy session
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SuccessResponse' }
+  /api/auth/session:
+    get:
+      operationId: authGetSession
+      tags: [Auth]
+      summary: Get current session
+      responses:
+        '200':
+          description: Session info
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+  /api/auth/acp/connect:
+    post:
+      operationId: authAcpConnect
+      tags: [Auth]
+      summary: Connect ACP account
+      responses:
+        '200': { description: Connected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/acp/disconnect:
+    post:
+      operationId: authAcpDisconnect
+      tags: [Auth]
+      summary: Disconnect ACP account
+      responses:
+        '200': { description: Disconnected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/github/callback:
+    post:
+      operationId: authGithubCallback
+      tags: [Auth]
+      summary: GitHub OAuth callback
+      requestBody: { content: { application/json: { schema: { type: object, properties: { code: { type: string } }, required: [code] } } } }
+      responses:
+        '200': { description: Connected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/instagram/callback:
+    post:
+      operationId: authInstagramCallback
+      tags: [Auth]
+      summary: Instagram OAuth callback
+      requestBody: { content: { application/json: { schema: { type: object, properties: { code: { type: string } }, required: [code] } } } }
+      responses:
+        '200': { description: Connected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/youtube/callback:
+    post:
+      operationId: authYoutubeCallback
+      tags: [Auth]
+      summary: YouTube OAuth callback
+      requestBody: { content: { application/json: { schema: { type: object, properties: { code: { type: string } }, required: [code] } } } }
+      responses:
+        '200': { description: Connected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/eventbrite/connect:
+    post:
+      operationId: authEventbriteConnect
+      tags: [Auth]
+      summary: Start Eventbrite OAuth
+      responses:
+        '200': { description: OAuth URL, content: { application/json: { schema: { type: object, properties: { url: { type: string } } } } } }
+  /api/auth/eventbrite/callback:
+    post:
+      operationId: authEventbriteCallback
+      tags: [Auth]
+      summary: Eventbrite OAuth callback
+      requestBody: { content: { application/json: { schema: { type: object, properties: { code: { type: string } }, required: [code] } } } }
+      responses:
+        '200': { description: Connected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/auth/google-calendar/connect:
+    post:
+      operationId: authGoogleCalendarConnect
+      tags: [Auth]
+      summary: Start Google Calendar OAuth
+      responses:
+        '200': { description: OAuth URL, content: { application/json: { schema: { type: object, properties: { url: { type: string } } } } } }
+
+  # OAuth
+  /.well-known/oauth-authorization-server:
+    get:
+      operationId: oauthMetadata
+      tags: [OAuth]
+      summary: OAuth server metadata
+      security: []
+      responses:
+        '200': { description: Metadata, content: { application/json: { schema: { type: object } } } }
+  /oauth/authorize:
+    post:
+      operationId: oauthAuthorize
+      tags: [OAuth]
+      summary: OAuth authorization (PKCE)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response_type: { type: string, enum: [code] }
+                client_id: { type: string }
+                redirect_uri: { type: string }
+                scope: { type: string }
+                state: { type: string }
+                code_challenge: { type: string }
+                code_challenge_method: { type: string, enum: [S256] }
+              required: [response_type, client_id, redirect_uri]
+      responses:
+        '200': { description: Auth code, content: { application/json: { schema: { type: object, properties: { code: { type: string }, state: { type: string } } } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /api/oauth/token:
+    post:
+      operationId: oauthToken
+      tags: [OAuth]
+      summary: Token exchange
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OAuthTokenRequest' }
+      responses:
+        '200': { description: Token, content: { application/json: { schema: { $ref: '#/components/schemas/OAuthTokenResponse' } } } }
+        '400': { description: Invalid grant, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  # Memories
+  /api/memories/feed:
+    get:
+      operationId: memoriesFeed
+      tags: [Memories]
+      summary: Get memory feed
+      parameters:
+        - { name: cursor, in: query, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 20 } }
+      responses:
+        '200': { description: Feed, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Memory' } }, cursor: { type: string, nullable: true }, has_more: { type: boolean } } } } } }
+  /api/memories/search:
+    post:
+      operationId: memoriesSearch
+      tags: [Memories]
+      summary: Search memories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query: { type: string }
+                mode: { type: string, enum: [hybrid, bm25, semantic] }
+                limit: { type: integer, default: 20 }
+              required: [query]
+      responses:
+        '200': { description: Results, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Memory' } }, total: { type: integer } } } } } }
+  /api/memories/{memoryId}:
+    get:
+      operationId: memoriesGet
+      tags: [Memories]
+      summary: Get memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Memory, content: { application/json: { schema: { $ref: '#/components/schemas/Memory' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/memories/{memoryId}/similar:
+    get:
+      operationId: memoriesGetSimilar
+      tags: [Memories]
+      summary: Get similar memories
+      parameters:
+        - { name: memoryId, in: path, required: true, schema: { type: string } }
+        - { name: limit, in: query, schema: { type: integer, default: 5 } }
+      responses:
+        '200': { description: Similar, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Memory' } } } } } } }
+  /api/memories/batch:
+    post:
+      operationId: memoriesBatch
+      tags: [Memories]
+      summary: Batch get memories
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { ids: { type: array, items: { type: string } } }, required: [ids] } } } }
+      responses:
+        '200': { description: Memories, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Memory' } } } } } } }
+  /api/memories/{memoryId}/comments:
+    post:
+      operationId: memoriesAddComment
+      tags: [Memories]
+      summary: Add comment
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { content: { type: string } }, required: [content] } } } }
+      responses:
+        '200': { description: Comment added, content: { application/json: { schema: { type: object } } } }
+  /api/memories/{memoryId}/rate:
+    post:
+      operationId: memoriesRate
+      tags: [Memories]
+      summary: Rate memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { rating: { type: number } }, required: [rating] } } } }
+      responses:
+        '200': { description: Rated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/publish:
+    post:
+      operationId: memoriesPublish
+      tags: [Memories]
+      summary: Publish memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Published, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/retract:
+    post:
+      operationId: memoriesRetract
+      tags: [Memories]
+      summary: Retract memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Retracted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/delete:
+    post:
+      operationId: memoriesDelete
+      tags: [Memories]
+      summary: Delete memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/restore:
+    post:
+      operationId: memoriesRestore
+      tags: [Memories]
+      summary: Restore memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Restored, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/organize:
+    post:
+      operationId: memoriesOrganize
+      tags: [Memories]
+      summary: Organize/tag memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { tags: { type: array, items: { type: string } } } } } } }
+      responses:
+        '200': { description: Organized, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memories/{memoryId}/confirm:
+    post:
+      operationId: memoriesConfirm
+      tags: [Memories]
+      summary: Confirm memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Confirmed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/memory-conversations/{memoryId}:
+    get:
+      operationId: memoryConversations
+      tags: [Memories]
+      summary: Get conversations about memory
+      parameters: [{ name: memoryId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Conversations, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Conversation' } } } } } } }
+
+  # Conversations
+  /api/conversations:
+    get:
+      operationId: conversationsList
+      tags: [Conversations]
+      summary: List conversations
+      responses:
+        '200': { description: List, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Conversation' } } } } } } }
+  /api/conversations/create:
+    post:
+      operationId: conversationsCreate
+      tags: [Conversations]
+      summary: Create conversation
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { type: { type: string, enum: [dm, group] }, participants: { type: array, items: { type: string } } }, required: [type] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Conversation' } } } }
+  /api/conversations/{conversationId}:
+    get:
+      operationId: conversationsGet
+      tags: [Conversations]
+      summary: Get conversation
+      parameters: [{ name: conversationId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Conversation, content: { application/json: { schema: { $ref: '#/components/schemas/Conversation' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/conversations/{conversationId}/messages:
+    post:
+      operationId: conversationsAddMessage
+      tags: [Conversations]
+      summary: Send message
+      parameters: [{ name: conversationId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { content: { type: string } }, required: [content] } } } }
+      responses:
+        '200': { description: Sent, content: { application/json: { schema: { $ref: '#/components/schemas/Message' } } } }
+  /api/conversations/{conversationId}/bulk-import:
+    post:
+      operationId: conversationsBulkImport
+      tags: [Conversations]
+      summary: Bulk import messages
+      parameters: [{ name: conversationId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { messages: { type: array, items: { type: object } } }, required: [messages] } } } }
+      responses:
+        '200': { description: Imported, content: { application/json: { schema: { type: object, properties: { imported: { type: integer } } } } } }
+
+  # Profiles
+  /api/profile/{userId}:
+    get:
+      operationId: profileGet
+      tags: [Profiles]
+      summary: Get profile
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Profile, content: { application/json: { schema: { $ref: '#/components/schemas/Profile' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /api/profile/{userId}/feed:
+    get:
+      operationId: profileFeed
+      tags: [Profiles]
+      summary: Get user's feed
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string } }, { name: cursor, in: query, schema: { type: string } }]
+      responses:
+        '200': { description: Feed, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Memory' } }, cursor: { type: string, nullable: true } } } } } }
+  /api/profile/{userId}/memories/count:
+    get:
+      operationId: profileMemoriesCount
+      tags: [Profiles]
+      summary: Count memories
+      parameters: [{ name: userId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Count, content: { application/json: { schema: { type: object, properties: { count: { type: integer } } } } } }
+  /api/profile/username-check:
+    post:
+      operationId: profileUsernameCheck
+      tags: [Profiles]
+      summary: Check username availability
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { username: { type: string } }, required: [username] } } } }
+      responses:
+        '200': { description: Result, content: { application/json: { schema: { type: object, properties: { available: { type: boolean } } } } } }
+  /api/profiles:
+    get:
+      operationId: profilesList
+      tags: [Profiles]
+      summary: List discoverable profiles
+      responses:
+        '200': { description: Profiles, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Profile' } } } } } } }
+
+  # Groups
+  /api/groups:
+    get:
+      operationId: groupsList
+      tags: [Groups]
+      summary: List groups
+      responses:
+        '200': { description: Groups, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Group' } } } } } } }
+  /api/groups/create:
+    post:
+      operationId: groupsCreate
+      tags: [Groups]
+      summary: Create group
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { name: { type: string }, description: { type: string } }, required: [name] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Group' } } } }
+  /api/groups/batch:
+    post:
+      operationId: groupsBatch
+      tags: [Groups]
+      summary: Batch get groups
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { ids: { type: array, items: { type: string } } }, required: [ids] } } } }
+      responses:
+        '200': { description: Groups, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Group' } } } } } } }
+  /api/groups/{groupId}:
+    get:
+      operationId: groupsGet
+      tags: [Groups]
+      summary: Get group
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Group, content: { application/json: { schema: { $ref: '#/components/schemas/Group' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: groupsUpdate
+      tags: [Groups]
+      summary: Update group
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { name: { type: string }, description: { type: string } } } } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Group' } } } }
+    delete:
+      operationId: groupsDelete
+      tags: [Groups]
+      summary: Delete group
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/members:
+    get:
+      operationId: groupsListMembers
+      tags: [Groups]
+      summary: List members
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Members, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/GroupMember' } } } } } } }
+  /api/groups/{groupId}/members/{userId}:
+    post:
+      operationId: groupsAddMember
+      tags: [Groups]
+      summary: Add member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }, { name: userId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Added, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+    delete:
+      operationId: groupsRemoveMember
+      tags: [Groups]
+      summary: Remove member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }, { name: userId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Removed, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/ban:
+    post:
+      operationId: groupsBan
+      tags: [Groups]
+      summary: Ban member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { userId: { type: string } }, required: [userId] } } } }
+      responses:
+        '200': { description: Banned, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/unban:
+    post:
+      operationId: groupsUnban
+      tags: [Groups]
+      summary: Unban member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { userId: { type: string } }, required: [userId] } } } }
+      responses:
+        '200': { description: Unbanned, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/mute:
+    post:
+      operationId: groupsMute
+      tags: [Groups]
+      summary: Mute member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { userId: { type: string } }, required: [userId] } } } }
+      responses:
+        '200': { description: Muted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/unmute:
+    post:
+      operationId: groupsUnmute
+      tags: [Groups]
+      summary: Unmute member
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { userId: { type: string } }, required: [userId] } } } }
+      responses:
+        '200': { description: Unmuted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/groups/{groupId}/links:
+    post:
+      operationId: groupsGetLinks
+      tags: [Groups]
+      summary: Get/create invite links
+      parameters: [{ name: groupId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Links, content: { application/json: { schema: { type: object, properties: { code: { type: string }, url: { type: string } } } } } }
+  /api/group-links/{code}/redeem:
+    post:
+      operationId: groupLinksRedeem
+      tags: [Groups]
+      summary: Redeem invite link
+      parameters: [{ name: code, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Joined, content: { application/json: { schema: { type: object, properties: { groupId: { type: string } } } } } }
+
+  # DMs
+  /api/dm:
+    get:
+      operationId: dmList
+      tags: [DMs]
+      summary: List DMs
+      responses:
+        '200': { description: DMs, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Conversation' } } } } } } }
+  /api/dm/create:
+    post:
+      operationId: dmCreate
+      tags: [DMs]
+      summary: Create DM
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { participantId: { type: string } }, required: [participantId] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Conversation' } } } }
+  /api/dm/{conversationId}:
+    get:
+      operationId: dmGet
+      tags: [DMs]
+      summary: Get DM
+      parameters: [{ name: conversationId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: DM, content: { application/json: { schema: { $ref: '#/components/schemas/Conversation' } } } }
+  /api/dm-links:
+    post:
+      operationId: dmLinksCreate
+      tags: [DMs]
+      summary: Create DM link
+      responses:
+        '200': { description: Link, content: { application/json: { schema: { type: object, properties: { code: { type: string }, url: { type: string } } } } } }
+  /api/dm-links/{code}/redeem:
+    post:
+      operationId: dmLinksRedeem
+      tags: [DMs]
+      summary: Redeem DM link
+      parameters: [{ name: code, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: DM created, content: { application/json: { schema: { type: object, properties: { conversationId: { type: string } } } } } }
+
+  # Search
+  /api/search/users:
+    post:
+      operationId: searchUsers
+      tags: [Search]
+      summary: Search users
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { query: { type: string } }, required: [query] } } } }
+      responses:
+        '200': { description: Results, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Profile' } } } } } } }
+  /api/search/conversations:
+    post:
+      operationId: searchConversations
+      tags: [Search]
+      summary: Search conversations
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { query: { type: string } }, required: [query] } } } }
+      responses:
+        '200': { description: Results, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Conversation' } } } } } } }
+  /api/search/groups:
+    post:
+      operationId: searchGroups
+      tags: [Search]
+      summary: Search groups
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { query: { type: string } }, required: [query] } } } }
+      responses:
+        '200': { description: Results, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Group' } } } } } } }
+  /api/search/messages:
+    post:
+      operationId: searchMessages
+      tags: [Search]
+      summary: Search messages
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { query: { type: string } }, required: [query] } } } }
+      responses:
+        '200': { description: Results, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Message' } } } } } } }
+
+  # Notifications
+  /api/notifications:
+    get:
+      operationId: notificationsList
+      tags: [Notifications]
+      summary: List notifications
+      responses:
+        '200': { description: Notifications, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Notification' } } } } } } }
+    post:
+      operationId: notificationsBulkAction
+      tags: [Notifications]
+      summary: Bulk actions
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { action: { type: string, enum: [mark_all_read] } }, required: [action] } } } }
+      responses:
+        '200': { description: Done, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/notifications/{notificationId}:
+    get:
+      operationId: notificationsGet
+      tags: [Notifications]
+      summary: Get notification
+      parameters: [{ name: notificationId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Notification, content: { application/json: { schema: { $ref: '#/components/schemas/Notification' } } } }
+    delete:
+      operationId: notificationsDelete
+      tags: [Notifications]
+      summary: Delete notification
+      parameters: [{ name: notificationId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/notifications/unread-count:
+    get:
+      operationId: notificationsUnreadCount
+      tags: [Notifications]
+      summary: Unread count
+      responses:
+        '200': { description: Count, content: { application/json: { schema: { type: object, properties: { count: { type: integer } } } } } }
+  /api/notifications/fcm-token:
+    post:
+      operationId: notificationsRegisterFcm
+      tags: [Notifications]
+      summary: Register FCM token
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { token: { type: string } }, required: [token] } } } }
+      responses:
+        '200': { description: Registered, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+
+  # Relationships
+  /api/relationships:
+    get:
+      operationId: relationshipsList
+      tags: [Relationships]
+      summary: List relationships
+      responses:
+        '200': { description: Relationships, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Relationship' } } } } } } }
+    post:
+      operationId: relationshipsCreate
+      tags: [Relationships]
+      summary: Create relationship
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { relatedUserId: { type: string } }, required: [relatedUserId] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Relationship' } } } }
+
+  # Boards
+  /api/boards:
+    get:
+      operationId: boardsList
+      tags: [Boards]
+      summary: List boards
+      responses:
+        '200': { description: Boards, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Board' } } } } } } }
+    post:
+      operationId: boardsCreate
+      tags: [Boards]
+      summary: Create board
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { name: { type: string } }, required: [name] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Board' } } } }
+  /api/boards/{boardId}:
+    get:
+      operationId: boardsGet
+      tags: [Boards]
+      summary: Get board
+      parameters: [{ name: boardId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Board, content: { application/json: { schema: { $ref: '#/components/schemas/Board' } } } }
+    patch:
+      operationId: boardsUpdate
+      tags: [Boards]
+      summary: Update board
+      parameters: [{ name: boardId, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { name: { type: string } } } } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Board' } } } }
+    delete:
+      operationId: boardsDelete
+      tags: [Boards]
+      summary: Delete board
+      parameters: [{ name: boardId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/boards/{boardId}/widgets:
+    get:
+      operationId: boardsListWidgets
+      tags: [Boards]
+      summary: List widgets
+      parameters: [{ name: boardId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Widgets, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/Widget' } } } } } } }
+    post:
+      operationId: boardsAddWidget
+      tags: [Boards]
+      summary: Add widget
+      parameters: [{ name: boardId, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { type: { type: string }, config: { type: object } }, required: [type] } } } }
+      responses:
+        '200': { description: Added, content: { application/json: { schema: { $ref: '#/components/schemas/Widget' } } } }
+
+  # Tokens
+  /api/tokens:
+    get:
+      operationId: tokensList
+      tags: [Tokens]
+      summary: List API tokens
+      responses:
+        '200': { description: Tokens, content: { application/json: { schema: { type: object, properties: { data: { type: array, items: { $ref: '#/components/schemas/ApiToken' } } } } } } }
+    post:
+      operationId: tokensCreate
+      tags: [Tokens]
+      summary: Create API token
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { name: { type: string } }, required: [name] } } } }
+      responses:
+        '200': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/ApiToken' } } } }
+  /api/tokens/{tokenId}:
+    patch:
+      operationId: tokensUpdate
+      tags: [Tokens]
+      summary: Update token
+      parameters: [{ name: tokenId, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { name: { type: string } } } } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/ApiToken' } } } }
+    delete:
+      operationId: tokensDelete
+      tags: [Tokens]
+      summary: Delete token
+      parameters: [{ name: tokenId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Deleted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+
+  # Integrations
+  /api/integrations:
+    get:
+      operationId: integrationsList
+      tags: [Integrations]
+      summary: List integrations
+      responses:
+        '200': { description: Integrations, content: { application/json: { schema: { type: object } } } }
+  /api/integrations/{provider}/disconnect:
+    post:
+      operationId: integrationsDisconnect
+      tags: [Integrations]
+      summary: Disconnect
+      parameters: [{ name: provider, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Disconnected, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+
+  # Settings
+  /api/settings/delete-account:
+    post:
+      operationId: settingsDeleteAccount
+      tags: [Settings]
+      summary: Delete account
+      responses:
+        '200': { description: Requested, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/settings/ghost:
+    post:
+      operationId: settingsGhost
+      tags: [Settings]
+      summary: Toggle ghost mode
+      responses:
+        '200': { description: Toggled, content: { application/json: { schema: { type: object, properties: { ghost: { type: boolean } } } } } }
+  /api/settings/visibility:
+    post:
+      operationId: settingsVisibility
+      tags: [Settings]
+      summary: Update visibility
+      requestBody: { content: { application/json: { schema: { type: object, properties: { visibility: { type: string, enum: [public, friends, private] } } } } } }
+      responses:
+        '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/consent/ai:
+    post:
+      operationId: consentAi
+      tags: [Settings]
+      summary: Accept AI consent
+      responses:
+        '200': { description: Accepted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/consent/tos:
+    post:
+      operationId: consentTos
+      tags: [Settings]
+      summary: Accept TOS
+      responses:
+        '200': { description: Accepted, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+
+  # Storage
+  /api/storage/image:
+    post:
+      operationId: storageUploadImage
+      tags: [Storage]
+      summary: Upload image
+      requestBody: { required: true, content: { multipart/form-data: { schema: { type: object, properties: { file: { type: string, format: binary } } } } } }
+      responses:
+        '200': { description: Uploaded, content: { application/json: { schema: { type: object, properties: { url: { type: string } } } } } }
+
+  # Payments
+  /api/stripe/checkout:
+    post:
+      operationId: stripeCheckout
+      tags: [Payments]
+      summary: Create checkout
+      responses:
+        '200': { description: URL, content: { application/json: { schema: { type: object, properties: { url: { type: string } } } } } }
+  /api/stripe/portal:
+    post:
+      operationId: stripePortal
+      tags: [Payments]
+      summary: Billing portal
+      responses:
+        '200': { description: URL, content: { application/json: { schema: { type: object, properties: { url: { type: string } } } } } }
+  /api/stripe/sync:
+    post:
+      operationId: stripeSync
+      tags: [Payments]
+      summary: Sync subscription
+      responses:
+        '200': { description: Synced, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
+  /api/subscription:
+    get:
+      operationId: subscriptionGet
+      tags: [Payments]
+      summary: Get subscription
+      responses:
+        '200': { description: Status, content: { application/json: { schema: { type: object, properties: { active: { type: boolean }, plan: { type: string, nullable: true } } } } } }
+
+  # Usage
+  /api/usage:
+    get:
+      operationId: usageGet
+      tags: [Usage]
+      summary: Usage stats
+      responses:
+        '200': { description: Usage, content: { application/json: { schema: { type: object } } } }
+
+  # Jobs
+  /api/jobs/{jobId}:
+    get:
+      operationId: jobsGet
+      tags: [Jobs]
+      summary: Job status
+      parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Job, content: { application/json: { schema: { type: object, properties: { id: { type: string }, status: { type: string, enum: [pending, running, completed, failed] }, progress: { type: number } } } } } }
+  /api/jobs/{jobId}/cancel:
+    post:
+      operationId: jobsCancel
+      tags: [Jobs]
+      summary: Cancel job
+      parameters: [{ name: jobId, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Cancelled, content: { application/json: { schema: { $ref: '#/components/schemas/SuccessResponse' } } } }
