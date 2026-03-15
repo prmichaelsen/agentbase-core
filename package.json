@@ -1,6 +1,6 @@
 {
   "name": "@prmichaelsen/agentbase-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities",
   "type": "module",
   "main": "dist/index.js",
