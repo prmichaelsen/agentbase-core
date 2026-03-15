@@ -77,3 +77,7 @@ export {
 
 export type { User, UserCredential, Auth } from './lib/index.js'
 export type { RateLimitConfig, RateLimitResult } from './lib/index.js'
+
+// Config
+export { loadConfig, validateConfig } from './config/index.js'
+export type { AgentbaseConfig, FirebaseAdminConfig, FirebaseClientConfig, AuthConfig } from './config/index.js'

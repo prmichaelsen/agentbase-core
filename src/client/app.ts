@@ -1,4 +1,5 @@
-import type { SdkResponse } from './http-transport.js'
+import { type SdkResponse, createErrorResponse } from './http-transport.js'
+import { InternalError } from '../errors/index.js'
 import type {
   AuthSvc, MemoriesSvc, ConversationsSvc, ProfilesSvc,
   GroupsSvc, DmsSvc, SearchSvc, NotificationsSvc,
@@ -40,13 +41,15 @@ export class AppClient {
   /**
    * OAuth: generate PKCE params, exchange code, return authenticated session
    */
-  async oauthExchangeAndGetSession(code: string, redirectUri: string, codeVerifier?: string) {
+  async oauthExchangeAndGetSession(code: string, redirectUri: string, codeVerifier?: string): Promise<SdkResponse<Schemas['SessionResponse']>> {
     if (!this.oauth) {
-      return { data: null, error: new Error('OAuthClient not configured') as any, status: 0 } as SdkResponse<Schemas['SessionResponse']>
+      return createErrorResponse(new InternalError('OAuthClient not configured'))
     }
 
     const tokenResult = await this.oauth.exchangeCode(code, redirectUri, codeVerifier)
-    if (tokenResult.error) return tokenResult as any
+    if (tokenResult.error) {
+      return createErrorResponse(tokenResult.error)
+    }
 
     return this.svc.auth.getSession()
   }

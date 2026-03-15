@@ -8,6 +8,10 @@ export interface SdkResponse<T> {
   throwOnError(): { data: T; status: number }
 }
 
+export function createErrorResponse<T>(error: AppError, status = 0): SdkResponse<T> {
+  return createSdkResponse<T>(null, error, status)
+}
+
 function createSdkResponse<T>(data: T | null, error: AppError | null, status: number): SdkResponse<T> {
   return {
     data,
