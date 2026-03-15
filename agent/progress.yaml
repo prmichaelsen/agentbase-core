@@ -19,7 +19,7 @@ milestones:
     started: 2026-03-15
     completed: null
     estimated_weeks: 2
-    tasks_completed: 9
+    tasks_completed: 10
     tasks_total: 11
     notes: |
       Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
@@ -109,12 +109,12 @@ tasks:
 
     - id: task-10
       name: npm Publish Setup & Verification
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-15T19:39:15Z
       file: agent/tasks/milestone-1-core-infrastructure/task-10-npm-publish.md
       estimated_hours: 1.5
-      completed_date: null
-      notes: Verify package.json, dry-run publish, test imports
+      completed_date: 2026-03-15T19:40:00Z
+      notes: "npm pack --dry-run clean — 69 dist files, 18.1 kB packed, no source/test leakage"
 
     - id: task-11
       name: API Documentation / README
