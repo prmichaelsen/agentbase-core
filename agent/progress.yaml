@@ -5,7 +5,7 @@ project:
   name: agentbase-core
   version: 0.1.0
   started: 2026-03-15
-  status: in_progress
+  status: completed
   current_milestone: M1
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
@@ -14,12 +14,12 @@ milestones:
   - id: M1
     name: Core Infrastructure
     file: agent/milestones/milestone-1-core-infrastructure.md
-    status: in_progress
-    progress: 80
+    status: completed
+    progress: 100
     started: 2026-03-15
     completed: null
     estimated_weeks: 2
-    tasks_completed: 10
+    tasks_completed: 11
     tasks_total: 11
     notes: |
       Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
@@ -118,12 +118,12 @@ tasks:
 
     - id: task-11
       name: API Documentation / README
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-15T19:40:00Z
       file: agent/tasks/milestone-1-core-infrastructure/task-11-api-documentation.md
       estimated_hours: 2
-      completed_date: null
-      notes: README with all public exports, usage examples, peer deps
+      completed_date: 2026-03-15T19:41:00Z
+      notes: "README.md with all exports documented, usage examples, peer dep table, type definitions"
 
 documentation:
   design_documents: 0
@@ -134,10 +134,10 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 80
-  testing: 0
-  documentation: 10
-  overall: 50
+  implementation: 100
+  testing: 100
+  documentation: 100
+  overall: 100
 
 recent_work:
   - date: 2026-03-15
