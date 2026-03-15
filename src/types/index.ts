@@ -20,6 +20,10 @@ export interface AuthResult {
   error?: string;
 }
 
+// Branded primitives
+export type { UserId, SessionId, TokenId, EmailAddress, Timestamp } from './branded.js'
+export { toUserId, toSessionId, toTokenId, toEmailAddress, toTimestamp } from './branded.js'
+
 // Result type
 export {
   ok, err, isOk, isErr,

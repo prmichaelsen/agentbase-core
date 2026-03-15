@@ -1,0 +1,52 @@
+# Agent Key File Index — agentbase-core
+# Read by @acp.proceed, @acp.plan, @acp.task-create to load contextual patterns
+
+entries:
+  - name: Pattern Compliance Audit
+    path: agent/reports/audit-2-pattern-compliance.md
+    weight: 0.9
+    type: report
+    applies: [acp.proceed]
+    rationale: Understand current compliance gaps before implementing
+
+  - name: Service Base Pattern
+    path: agent/patterns/core-sdk.service-base.md
+    weight: 0.8
+    type: pattern
+    applies: [acp.proceed, acp.task-create]
+    rationale: All services must follow BaseService lifecycle pattern
+
+  - name: Error Types Pattern
+    path: agent/patterns/core-sdk.types-error.md
+    weight: 0.8
+    type: pattern
+    applies: [acp.proceed]
+    rationale: Throw typed AppError subclasses, not generic Error
+
+  - name: Unit Testing Pattern
+    path: agent/patterns/core-sdk.testing-unit.md
+    weight: 0.7
+    type: pattern
+    applies: [acp.proceed, acp.task-create]
+    rationale: Colocated .test.ts files with AAA pattern
+
+  - name: Result Types Pattern
+    path: agent/patterns/core-sdk.types-result.md
+    weight: 0.6
+    type: pattern
+    applies: [acp.proceed]
+    rationale: Use Result<T,E> for expected failures
+
+  - name: Client SDK Pattern
+    path: agent/patterns/core-sdk.client-svc.md
+    weight: 0.6
+    type: pattern
+    applies: [acp.proceed, acp.task-create]
+    rationale: SvcClient 1:1 REST mirror pattern
+
+  - name: Service Logging Pattern
+    path: agent/patterns/core-sdk.service-logging.md
+    weight: 0.6
+    type: pattern
+    applies: [acp.proceed]
+    rationale: Use structured logger with sanitization, not console.log

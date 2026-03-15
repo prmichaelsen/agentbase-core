@@ -4,6 +4,20 @@ export interface SdkResponse<T> {
   data: T | null
   error: AppError | null
   status: number
+  /** Throw the error if present, otherwise return { data, status } with non-null data. */
+  throwOnError(): { data: T; status: number }
+}
+
+function createSdkResponse<T>(data: T | null, error: AppError | null, status: number): SdkResponse<T> {
+  return {
+    data,
+    error,
+    status,
+    throwOnError() {
+      if (error) throw error
+      return { data: data as T, status }
+    },
+  }
 }
 
 export type AuthStrategy =
@@ -91,7 +105,7 @@ export class HttpClient {
 
       if (response.ok) {
         const data = await response.json() as T
-        return { data, error: null, status: response.status }
+        return createSdkResponse(data, null, response.status)
       }
 
       const errorBody = await response.json().catch(() => ({ error: response.statusText })) as { error?: string }
@@ -109,16 +123,16 @@ export class HttpClient {
           error = new ExternalError(message, { status: response.status })
       }
 
-      return { data: null, error, status: response.status }
+      return createSdkResponse<T>(null, error, response.status)
     } catch (err) {
       clearTimeout(timeoutId)
 
       if (err instanceof AppError) {
-        return { data: null, error: err, status: 0 }
+        return createSdkResponse<T>(null, err, 0)
       }
 
       const message = err instanceof Error ? err.message : 'Network error'
-      return { data: null, error: new ExternalError(message), status: 0 }
+      return createSdkResponse<T>(null, new ExternalError(message), 0)
     }
   }
 
