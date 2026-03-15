@@ -10,6 +10,22 @@ export type { PendingAction } from './services/confirmation-token.service.js'
 // Types
 export type { AuthUser, ServerSession, AuthResult } from './types/index.js'
 
+// Errors
+export {
+  AppError,
+  ValidationError,
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+  ConflictError,
+  RateLimitError,
+  ExternalError,
+  InternalError,
+  isAppError,
+  errorToStatusCode,
+} from './errors/index.js'
+export type { ErrorKind } from './errors/index.js'
+
 // Lib — re-export everything
 export {
   // Logger
