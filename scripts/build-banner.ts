@@ -32,24 +32,30 @@ try {
   testCount = parseInt(execSync("find src -name '*.test.ts' | wc -l").toString().trim())
 } catch {}
 
-// Gradients
-const coolGradient = gradient(['#00d2ff', '#3a7bd5', '#9b59b6'])
+// Gradients — only for simple text, not ASCII art
 const warmGradient = gradient(['#f7971e', '#ffd200'])
+const titleGradient = gradient(['#00d2ff', '#3a7bd5', '#9b59b6'])
 
-// Banner
+// Banner — color each line with chalk (not gradient, which mangles special chars)
 const banner = figlet.textSync('agentbase', {
   font: 'Small Slant',
   horizontalLayout: 'fitted',
 })
 
 console.log()
-console.log(coolGradient(banner))
+// Apply chalk.cyan to each line individually so figlet characters stay intact
+for (const line of banner.split('\n')) {
+  console.log(chalk.cyan.bold(line))
+}
+console.log()
+
+// Title gradient on simple text only
+console.log(`  ${titleGradient('agentbase-core')}  ${chalk.dim(`v${version}`)}`)
 console.log()
 
 // Status line
 const status = [
   chalk.bold.green('ALL GREEN'),
-  chalk.dim(`v${version}`),
   chalk.yellow(`${testCount} test suites`),
   chalk.magenta(`${ops} API ops`),
 ].join(chalk.dim('  |  '))
@@ -64,7 +70,7 @@ if (stmts !== '?') {
   const bar = chalk.green('█'.repeat(filled)) + chalk.gray('░'.repeat(empty))
 
   console.log()
-  console.log(`  ${bar}  ${warmGradient(`${stmts}%`)} stmts`)
+  console.log(`  ${bar}  ${warmGradient(`${stmts}%`)} ${chalk.dim('stmts')}`)
   console.log(`  ${chalk.dim('branches')} ${chalk.yellow(`${branches}%`)}  ${chalk.dim('functions')} ${chalk.yellow(`${funcs}%`)}`)
 }
 
