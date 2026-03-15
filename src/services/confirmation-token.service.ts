@@ -12,6 +12,11 @@ export interface PendingAction {
   createdAt: number
 }
 
+export interface IConfirmationTokenService {
+  generateToken(action: PendingAction): string
+  consumeToken(token: string, userId: string): PendingAction | null
+}
+
 const DEFAULT_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 /**
@@ -21,7 +26,7 @@ const DEFAULT_TTL_MS = 5 * 60 * 1000 // 5 minutes
  * Mutating tools generate a preview + token; a confirm step consumes the token to execute.
  * Tokens are single-use, user-scoped, and expire after TTL.
  */
-export class ConfirmationTokenService {
+export class ConfirmationTokenService implements IConfirmationTokenService {
   private pending = new Map<string, PendingAction>()
   private ttlMs: number
 
