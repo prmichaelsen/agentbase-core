@@ -9,6 +9,8 @@ export type { PendingAction } from './services/confirmation-token.service.js'
 
 // Types
 export type { AuthUser, ServerSession, AuthResult } from './types/index.js'
+export type { Ok, Err, Result } from './types/index.js'
+export { ok, err, isOk, isErr, mapOk, mapErr, andThen, getOrElse, tryCatch, tryCatchAsync } from './types/index.js'
 
 // Errors
 export {

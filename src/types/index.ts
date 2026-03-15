@@ -19,3 +19,11 @@ export interface AuthResult {
   success: boolean;
   error?: string;
 }
+
+// Result type
+export {
+  ok, err, isOk, isErr,
+  mapOk, mapErr, andThen, getOrElse,
+  tryCatch, tryCatchAsync,
+} from './result.js'
+export type { Ok, Err, Result } from './result.js'
