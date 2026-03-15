@@ -1,59 +1,37 @@
 import { getServerSession } from './session.js';
+import { UnauthorizedError, ForbiddenError } from '../../errors/index.js';
 
 /**
- * Middleware to require authentication
- * @returns Response object with error if not authenticated, null if authorized
+ * Require authentication. Throws UnauthorizedError if not authenticated.
  */
-export async function requireAuth(request: Request): Promise<Response | null> {
+export async function requireAuth(request: Request): Promise<void> {
   const session = await getServerSession(request);
 
   if (!session || !session.user) {
-    return new Response(
-      JSON.stringify({ error: 'Unauthorized: Authentication required' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    throw new UnauthorizedError('Authentication required');
   }
-
-  return null;
 }
 
 /**
- * Middleware to require admin access
+ * Require admin access. Throws UnauthorizedError or ForbiddenError.
  * @param ownerEmails Comma-separated admin emails (or pass via env)
  */
-export async function requireAdmin(request: Request, ownerEmails?: string): Promise<Response | null> {
+export async function requireAdmin(request: Request, ownerEmails?: string): Promise<void> {
   const session = await getServerSession(request);
 
   if (!session || !session.user) {
-    return new Response(
-      JSON.stringify({ error: 'Unauthorized: Authentication required' }),
-      {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    throw new UnauthorizedError('Authentication required');
   }
 
   const emails = (ownerEmails ?? process.env.OWNER_EMAILS ?? '').split(',').map(e => e.trim());
 
   if (!session.user.email || !emails.includes(session.user.email)) {
-    return new Response(
-      JSON.stringify({ error: 'Forbidden: Admin access required' }),
-      {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    throw new ForbiddenError('Admin access required');
   }
-
-  return null;
 }
 
 /**
- * Check if a user is an admin
+ * Check if a user is an admin (boolean, does not throw)
  */
 export async function isAdmin(request: Request, ownerEmails?: string): Promise<boolean> {
   const session = await getServerSession(request);
