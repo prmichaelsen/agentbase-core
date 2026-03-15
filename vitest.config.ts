@@ -13,6 +13,7 @@ export default defineConfig({
         'src/client/svc.ts',
         'src/client/app.ts',
       ],
+      reporter: ['text', 'json-summary'],
       thresholds: {
         branches: 80,
         functions: 80,

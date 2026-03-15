@@ -44,7 +44,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage && bash scripts/build-banner.sh",
     "generate:types": "npx openapi-typescript openapi.yaml -o src/client/api-types.generated.ts",
     "prepublishOnly": "npm run build"
   },
