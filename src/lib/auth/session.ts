@@ -5,6 +5,7 @@ import {
 } from '@prmichaelsen/firebase-admin-sdk-v8';
 import type { AuthUser, ServerSession } from '../../types/index.js';
 import { authLogger } from '../logger.js';
+import { ExternalError } from '../../errors/index.js';
 
 /**
  * Get the session cookie from a request
@@ -28,7 +29,7 @@ function getSessionCookie(request: Request): string | undefined {
 
     return cookies.session;
   } catch (error) {
-    console.error('[getSessionCookie] Error:', error);
+    authLogger.error('Failed to parse session cookie', error as Error);
     return undefined;
   }
 }
@@ -73,7 +74,7 @@ export async function getServerSession(request: Request): Promise<ServerSession 
 
     return { user };
   } catch (error) {
-    authLogger.error('Failed to get server session', error);
+    authLogger.error('Failed to get server session', error as Error);
     return null;
   }
 }
@@ -98,11 +99,11 @@ export async function createSessionCookie(idToken: string, expiresInMs = 60 * 60
       expiresIn: expiresInMs
     });
 
-    console.log('[createSessionCookie] Session cookie created');
+    authLogger.info('Session cookie created');
     return sessionCookie;
   } catch (error) {
-    console.error('[createSessionCookie] Error:', error);
-    throw new Error('Failed to create session cookie');
+    authLogger.error('Failed to create session cookie', error as Error);
+    throw new ExternalError('Failed to create session cookie', { idTokenPrefix: idToken.substring(0, 8) });
   }
 }
 
@@ -114,10 +115,10 @@ export async function revokeSession(request: Request): Promise<void> {
     const session = await getServerSession(request);
 
     if (session?.user) {
-      console.log('[revokeSession] Session revoked for user:', session.user.uid);
+      authLogger.info('Session revoked', { userId: session.user.uid });
     }
   } catch (error) {
-    console.error('[revokeSession] Error:', error);
-    throw new Error('Failed to revoke session');
+    authLogger.error('Failed to revoke session', error as Error);
+    throw new ExternalError('Failed to revoke session');
   }
 }

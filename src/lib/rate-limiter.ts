@@ -4,6 +4,8 @@
  * Provides rate limiting functionality using Cloudflare Workers Rate Limiting API
  */
 
+import { apiLogger } from './logger.js'
+
 export interface RateLimitConfig {
   limit: number
   period: number  // seconds
@@ -37,7 +39,7 @@ export async function checkRateLimit(
       retryAfter
     }
   } catch (error) {
-    console.error('[RateLimit] Error checking rate limit:', error)
+    apiLogger.error('Rate limit check failed, failing open', error as Error)
     // Fail open - allow request if rate limiter fails
     return {
       success: true,
