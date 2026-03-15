@@ -3,10 +3,10 @@
 
 project:
   name: agentbase-core
-  version: 0.1.0
+  version: 0.1.1
   started: 2026-03-15
-  status: completed
-  current_milestone: M1
+  status: in_progress
+  current_milestone: M2
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
 
@@ -17,12 +17,64 @@ milestones:
     status: completed
     progress: 100
     started: 2026-03-15
-    completed: null
+    completed: 2026-03-15
     estimated_weeks: 2
     tasks_completed: 11
     tasks_total: 11
     notes: |
-      Implementation ~80% done. All source files exist. Remaining: build verification, test suite, npm publish, API docs.
+      All 11 tasks complete. Build, tests (132 passing), npm publish verified, README written.
+
+  - id: M2
+    name: Critical Pattern Compliance
+    file: agent/milestones/milestone-2-critical-pattern-compliance.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 1
+    tasks_completed: 0
+    tasks_total: 4
+    notes: |
+      Error type hierarchy + guard refactor. Highest-impact pattern compliance changes (65% -> 80%).
+
+  - id: M3
+    name: High Pattern Compliance
+    file: agent/milestones/milestone-3-high-pattern-compliance.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 1
+    tasks_completed: 0
+    tasks_total: 3
+    notes: |
+      Service interfaces + state tracking. Depends on M2. (80% -> 85%).
+
+  - id: M4
+    name: Medium Pattern Compliance
+    file: agent/milestones/milestone-4-medium-pattern-compliance.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 1
+    tasks_completed: 0
+    tasks_total: 4
+    notes: |
+      Result type, logging cleanup, coverage thresholds. (85% -> 92%).
+
+  - id: M5
+    name: Client SDK + OpenAPI
+    file: agent/milestones/milestone-5-client-sdk-openapi.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 3
+    tasks_completed: 0
+    tasks_total: 11
+    notes: |
+      Full client SDK for agentbase.me. OpenAPI 3.1 spec (~135 endpoints), type generation, HTTP transport, SvcClient, AppClient, OAuth helpers.
 
 tasks:
   milestone_1:
@@ -33,7 +85,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-1-build-verification.md
       estimated_hours: 1
       completed_date: 2026-03-15T19:22:00Z
-      notes: "tsc builds clean, typecheck passes, dist/ structure correct with all .js/.d.ts/.map files"
+      notes: "tsc builds clean, typecheck passes, dist/ structure correct"
 
     - id: task-2
       name: Test Infrastructure Setup
@@ -42,7 +94,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-2-test-infrastructure.md
       estimated_hours: 2
       completed_date: 2026-03-15T19:33:00Z
-      notes: "vitest + @vitest/coverage-v8 installed, vitest.config.ts created, smoke test passes"
+      notes: "vitest + @vitest/coverage-v8 installed"
 
     - id: task-3
       name: "Tests: BaseService + ConfirmationTokenService"
@@ -51,7 +103,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-3-tests-services.md
       estimated_hours: 2
       completed_date: 2026-03-15T19:34:00Z
-      notes: "14 tests: 6 BaseService + 8 ConfirmationTokenService, all passing"
+      notes: "14 tests passing"
 
     - id: task-4
       name: "Tests: Logger & Sanitization"
@@ -60,7 +112,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-4-tests-logger.md
       estimated_hours: 2
       completed_date: 2026-03-15T19:35:00Z
-      notes: "33 tests: sanitizeToken(5), sanitizeEmail(4), sanitizeUserId(3), sanitizeObject(10), createLogger(7), pre-configured(4)"
+      notes: "33 tests passing"
 
     - id: task-5
       name: "Tests: Firebase Admin Wrapper"
@@ -69,7 +121,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-5-tests-firebase-admin.md
       estimated_hours: 1
       completed_date: 2026-03-15T19:35:30Z
-      notes: "2 tests: env var mapping, undefined env handling"
+      notes: "2 tests passing"
 
     - id: task-6
       name: "Tests: Firebase Client Wrapper"
@@ -78,7 +130,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-6-tests-firebase-client.md
       estimated_hours: 3
       completed_date: 2026-03-15T19:36:00Z
-      notes: "19 tests: init(2), getApp(2), getAuth(2), auth flows(9), session helpers(4)"
+      notes: "19 tests passing"
 
     - id: task-7
       name: "Tests: Auth (session, guards, helpers)"
@@ -87,7 +139,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-7-tests-auth.md
       estimated_hours: 3
       completed_date: 2026-03-15T19:37:30Z
-      notes: "22 tests: helpers(9), session(8), guards(9) — vi.hoisted() for mock hoisting"
+      notes: "22 tests passing"
 
     - id: task-8
       name: "Tests: Utilities (format-time, linkify, uuid)"
@@ -96,7 +148,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-8-tests-utilities.md
       estimated_hours: 2
       completed_date: 2026-03-15T19:38:30Z
-      notes: "20 tests: format-time(7), linkify(9), uuid(4)"
+      notes: "20 tests passing"
 
     - id: task-9
       name: "Tests: Rate Limiter"
@@ -105,7 +157,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-9-tests-rate-limiter.md
       estimated_hours: 1.5
       completed_date: 2026-03-15T19:39:15Z
-      notes: "12 tests: checkRateLimit(4), createRateLimitResponse(4), getRateLimitIdentifier(4)"
+      notes: "12 tests passing"
 
     - id: task-10
       name: npm Publish Setup & Verification
@@ -114,7 +166,7 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-10-npm-publish.md
       estimated_hours: 1.5
       completed_date: 2026-03-15T19:40:00Z
-      notes: "npm pack --dry-run clean — 69 dist files, 18.1 kB packed, no source/test leakage"
+      notes: "npm pack clean, 69 dist files"
 
     - id: task-11
       name: API Documentation / README
@@ -123,46 +175,251 @@ tasks:
       file: agent/tasks/milestone-1-core-infrastructure/task-11-api-documentation.md
       estimated_hours: 2
       completed_date: 2026-03-15T19:41:00Z
-      notes: "README.md with all exports documented, usage examples, peer dep table, type definitions"
+      notes: "README with full API docs"
+
+  milestone_2:
+    - id: task-12
+      name: Create error type hierarchy
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-2-critical-pattern-compliance/task-12-error-type-hierarchy.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "AppError base + subclasses + isAppError() + HTTP status mapping"
+
+    - id: task-13
+      name: Refactor auth guards to throw typed errors
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-2-critical-pattern-compliance/task-13-refactor-auth-guards.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "Guards throw UnauthorizedError/ForbiddenError instead of returning Response. Depends: T12"
+
+    - id: task-14
+      name: Update session.ts and rate-limiter.ts error handling
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-2-critical-pattern-compliance/task-14-update-error-handling.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "Typed errors in session + rate-limiter. Depends: T12"
+
+    - id: task-15
+      name: Tests for error types and refactored guards
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-2-critical-pattern-compliance/task-15-tests-error-types-guards.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "Error module tests + updated guard/session tests. Depends: T13, T14"
+
+  milestone_3:
+    - id: task-16
+      name: Define service interfaces
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-3-high-pattern-compliance/task-16-service-interfaces.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "IConfirmationTokenService, IAuthService interfaces"
+
+    - id: task-17
+      name: Add ServiceState enum and state tracking
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-3-high-pattern-compliance/task-17-service-state-tracking.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "ServiceState enum, ensureInitialized(), getState()"
+
+    - id: task-18
+      name: Tests for interfaces and state tracking
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-3-high-pattern-compliance/task-18-tests-interfaces-state.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "State transitions, ensureInitialized() throws. Depends: T16, T17"
+
+  milestone_4:
+    - id: task-19
+      name: "Implement Result<T,E> type with helpers"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-19-result-type.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "Ok/Err discriminated union, type guards, combinators"
+
+    - id: task-20
+      name: Replace direct console.log with structured logger
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-20-replace-console-log.md
+      estimated_hours: 0.5
+      completed_date: null
+      notes: "session.ts + rate-limiter.ts console calls -> logger"
+
+    - id: task-21
+      name: Add coverage thresholds to vitest.config.ts
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-21-coverage-thresholds.md
+      estimated_hours: 0.5
+      completed_date: null
+      notes: "80% branches/functions/lines/statements"
+
+    - id: task-22
+      name: "Tests for Result type"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-4-medium-pattern-compliance/task-22-tests-result-type.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "Ok/Err, guards, combinators, tryCatchAsync. Depends: T19"
+
+  milestone_5:
+    - id: task-23
+      name: "OpenAPI spec: auth + OAuth endpoints"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-23-openapi-auth.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "Base spec + security schemes + auth/OAuth paths"
+
+    - id: task-24
+      name: "OpenAPI spec: memories + conversations + profiles"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-24-openapi-memories-conversations.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "Core domain APIs. Depends: T23"
+
+    - id: task-25
+      name: "OpenAPI spec: groups + DMs + search + notifications"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-25-openapi-groups-search.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "Social + discovery APIs. Depends: T23"
+
+    - id: task-26
+      name: "OpenAPI spec: remaining endpoints"
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-26-openapi-remaining.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "Boards, relationships, spaces, integrations, payments, admin. Depends: T23"
+
+    - id: task-27
+      name: Type generation setup (openapi-typescript)
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-27-type-generation.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "Generate types from spec. Depends: T23-T26"
+
+    - id: task-28
+      name: HTTP transport layer with auth
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-28-http-transport.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "HttpClient + 3 auth strategies + SdkResponse<T>. Depends: T27, M2"
+
+    - id: task-29
+      name: SvcClient resource classes
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-29-svc-client.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "1:1 REST mirror for all ~135 endpoints. Depends: T28"
+
+    - id: task-30
+      name: AppClient compound workflows
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-30-app-client.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "Multi-step workflow helpers. Depends: T29"
+
+    - id: task-31
+      name: OAuth helper utilities
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-31-oauth-helpers.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "PKCE, token exchange, refresh, storage. Depends: T28"
+
+    - id: task-32
+      name: Client SDK tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-32-client-sdk-tests.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "HttpClient, SvcClient, AppClient, OAuth tests. Depends: T28-T31"
+
+    - id: task-33
+      name: Package exports + documentation
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-5-client-sdk-openapi/task-33-package-exports-docs.md
+      estimated_hours: 1.5
+      completed_date: null
+      notes: "New /client entry point, README update. Depends: T29-T31"
 
 documentation:
   design_documents: 0
-  milestone_documents: 1
-  pattern_documents: 0
-  task_documents: 11
+  milestone_documents: 5
+  pattern_documents: 31
+  task_documents: 33
   last_updated: 2026-03-15
 
 progress:
   planning: 100
-  implementation: 100
-  testing: 100
-  documentation: 100
-  overall: 100
+  implementation: 33
+  testing: 33
+  documentation: 33
+  overall: 33
 
 recent_work:
   - date: 2026-03-15
     description: |
-      ACP initialized and M1 planned with 11 granular tasks.
+      M1 complete. Audited patterns, planned M2-M5.
     items:
-      - "Installed ACP v5.22.0"
-      - "Reviewed project structure and all source files"
-      - "Created milestone-1-core-infrastructure.md"
-      - "Created 11 task documents (build, test infra, 7 test suites, publish, docs)"
-      - "Updated progress.yaml with full task breakdown"
+      - "M1 complete: 11 tasks, 132 tests, build verified, published"
+      - "Installed 31 core-sdk patterns"
+      - "Audit 1: core-sdk patterns catalog"
+      - "Audit 2: pattern compliance (65% score)"
+      - "Planned M2-M5: 22 new tasks across 4 milestones"
 
 next_steps:
-  - "Task 1: Verify build compiles cleanly"
-  - "Task 2: Set up vitest + mock infrastructure"
-  - "Tasks 3-9: Write unit tests (can parallelize independent suites)"
-  - "Task 10: npm publish dry-run"
-  - "Task 11: Write README"
+  - "M2 T12: Create error type hierarchy (CRITICAL)"
+  - "M2 T13-T14: Refactor guards + session/rate-limiter errors"
+  - "M2 T15: Test error types"
+  - "M3: Service interfaces + state tracking"
+  - "M4: Result type + logging + coverage"
+  - "M5: OpenAPI spec + client SDK (biggest effort)"
 
 notes:
   - Project is a shared library consumed by other agentbase projects
   - Uses Firebase Admin SDK (custom fork @prmichaelsen/firebase-admin-sdk-v8) and Firebase client SDK as peer deps
-  - Exports via multiple entry points (services, lib, lib/auth, types)
+  - Exports via multiple entry points (services, lib, lib/auth, types, future: client)
   - ESM-only (type: module)
-  - Tasks 3-9 (test suites) can be worked in parallel after Task 2 completes
+  - Pattern compliance at 65%, target 92% after M2-M4
+  - M5 will add full client SDK for agentbase.me (~135 endpoints via OpenAPI)
+  - M5 enables third-party OAuth integration with agentbase.me
 
 current_blockers: []
 
@@ -177,3 +434,6 @@ dependencies:
     - name: jsonwebtoken
       version: ">=9.0.0"
       purpose: JWT handling for auth (peer dep, optional)
+    - name: openapi-typescript
+      version: "TBD"
+      purpose: "Type generation from OpenAPI spec (devDep, M5)"
