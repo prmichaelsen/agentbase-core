@@ -12,12 +12,19 @@ export interface Logger {
   error(message: string, context?: Record<string, unknown>): void;
 }
 
+export enum ServiceState {
+  Uninitialized = 'uninitialized',
+  Initialized = 'initialized',
+  ShutDown = 'shutdown',
+}
+
 /**
  * Abstract base class for all services.
  *
  * Provides:
  * - Constructor injection of config and logger
- * - Optional initialize/shutdown lifecycle hooks
+ * - Lifecycle hooks (initialize/shutdown) with state tracking
+ * - ensureInitialized() guard for methods that require initialization
  * - Consistent naming (className from constructor.name)
  *
  * @example
@@ -33,6 +40,7 @@ export interface Logger {
  */
 export abstract class BaseService<TConfig = unknown> {
   protected readonly name: string;
+  private _state: ServiceState = ServiceState.Uninitialized;
 
   constructor(
     protected readonly config: TConfig,
@@ -42,11 +50,28 @@ export abstract class BaseService<TConfig = unknown> {
   }
 
   /**
+   * Current lifecycle state.
+   */
+  getState(): ServiceState {
+    return this._state;
+  }
+
+  /**
+   * Guard: throws if service has not been initialized.
+   * Call at the start of methods that depend on initialization.
+   */
+  protected ensureInitialized(): void {
+    if (this._state !== ServiceState.Initialized) {
+      throw new Error(`${this.name} is not initialized (state: ${this._state})`);
+    }
+  }
+
+  /**
    * Called once when the application starts.
    * Override to connect to databases, warm up caches, or validate config.
    */
   async initialize(): Promise<void> {
-    // No-op by default
+    this._state = ServiceState.Initialized;
   }
 
   /**
@@ -54,6 +79,6 @@ export abstract class BaseService<TConfig = unknown> {
    * Override to close connections, flush buffers, or clean up resources.
    */
   async shutdown(): Promise<void> {
-    // No-op by default
+    this._state = ServiceState.ShutDown;
   }
 }
