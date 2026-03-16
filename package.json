@@ -45,6 +45,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage && npx tsx scripts/build-banner.ts",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
     "generate:types": "npx openapi-typescript openapi.yaml -o src/client/api-types.generated.ts",
     "prepublishOnly": "npm run build"
   },
@@ -77,6 +78,7 @@
     "@types/jsonwebtoken": "^9.0.0",
     "@vitest/coverage-v8": "^4.1.0",
     "chalk": "^5.6.2",
+    "dotenv": "^17.3.1",
     "figlet": "^1.11.0",
     "firebase": "^10.14.1",
     "gradient-string": "^3.0.0",
