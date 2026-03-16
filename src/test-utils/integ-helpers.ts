@@ -7,23 +7,24 @@ import type { AgentbaseConfig } from '../config/index.js';
 const ENV_FILE = resolve(process.cwd(), '.env.e1.local');
 
 /**
- * Load environment variables from .env.e1.local.
- * Returns true if the file exists and was loaded, false otherwise.
+ * Load environment variables from .env.e1.local if it exists.
+ * In CI, env vars are injected directly — this is a no-op.
+ * Returns true if credentials are available (from file or environment).
  */
 export function loadE1Env(): boolean {
-  if (!existsSync(ENV_FILE)) {
-    return false;
+  if (existsSync(ENV_FILE)) {
+    config({ path: ENV_FILE });
   }
-  config({ path: ENV_FILE });
-  return true;
+  return !!process.env.FIREBASE_PROJECT_ID;
 }
 
 /**
  * Check if e1 credentials are available.
- * Call this at the top of describe blocks to skip when credentials are absent.
+ * Works both locally (.env.e1.local) and in CI (env vars injected by secrets).
  */
 export function hasE1Credentials(): boolean {
-  return existsSync(ENV_FILE) && !!process.env.FIREBASE_PROJECT_ID;
+  loadE1Env();
+  return !!process.env.FIREBASE_PROJECT_ID && !!process.env.FIREBASE_API_KEY;
 }
 
 /**
