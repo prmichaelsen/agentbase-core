@@ -43,7 +43,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "generate": "npm run generate:types && npm run generate:dtos",
+    "build": "npm run generate && tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
