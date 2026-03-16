@@ -1,6 +1,6 @@
 {
   "name": "@prmichaelsen/agentbase-core",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities",
   "type": "module",
   "main": "dist/index.js",
@@ -33,6 +33,10 @@
     "./config": {
       "import": "./dist/config/index.js",
       "types": "./dist/config/index.d.ts"
+    },
+    "./dto": {
+      "import": "./dist/dto/index.js",
+      "types": "./dist/dto/index.d.ts"
     }
   },
   "files": [
@@ -47,6 +51,7 @@
     "test:coverage": "vitest run --coverage && npx tsx scripts/build-banner.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "generate:types": "npx openapi-typescript openapi.yaml -o src/client/api-types.generated.ts",
+    "generate:dtos": "npx tsx scripts/generate-dtos.ts",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
@@ -59,6 +64,8 @@
   "license": "MIT",
   "peerDependencies": {
     "@prmichaelsen/firebase-admin-sdk-v8": ">=2.0.0",
+    "class-transformer": ">=0.5.0",
+    "class-validator": ">=0.14.0",
     "firebase": ">=10.0.0",
     "jsonwebtoken": ">=9.0.0"
   },
@@ -71,6 +78,12 @@
     },
     "jsonwebtoken": {
       "optional": true
+    },
+    "class-validator": {
+      "optional": true
+    },
+    "class-transformer": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -78,6 +91,8 @@
     "@types/jsonwebtoken": "^9.0.0",
     "@vitest/coverage-v8": "^4.1.0",
     "chalk": "^5.6.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "dotenv": "^17.3.1",
     "figlet": "^1.11.0",
     "firebase": "^10.14.1",
@@ -86,6 +101,7 @@
     "openapi-typescript": "^7.13.0",
     "tsx": "^4.21.0",
     "typescript": "^5.5.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.0",
+    "yaml": "^2.8.2"
   }
 }

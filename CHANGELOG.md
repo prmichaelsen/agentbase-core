@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0] - 2026-03-16
+
+### Added
+- Generated DTO classes from OpenAPI spec via `npm run generate:dtos`
+- 19 DTO classes with `class-validator` decorators (framework-agnostic — works with NestJS, Express, Hono, etc.)
+- New `./dto` export entry point: `import { MemoryDto } from '@prmichaelsen/agentbase-core/dto'`
+- `class-validator` and `class-transformer` as optional peer dependencies
+- `scripts/generate-dtos.ts` code generator
+
 ## [0.3.0] - 2026-03-16
 
 ### Changed
