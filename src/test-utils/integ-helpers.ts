@@ -50,3 +50,49 @@ export function getE1Config(): AgentbaseConfig {
 export function makeDescribeIfE1(desc: typeof globalThis.describe) {
   return hasE1Credentials() ? desc : desc.skip;
 }
+
+const E1_BASE_URL = 'https://e1.agentbase.me';
+
+/**
+ * Create an authenticated HttpClient for e1 integration tests.
+ * Signs up a test user, gets an ID token, and returns { http, email, password, idToken, cleanup }.
+ * Call cleanup() in afterAll to delete the test user.
+ */
+export async function createAuthenticatedE1Client() {
+  // Lazy imports to avoid pulling Firebase into non-integ contexts
+  const { initializeFirebase, signUp, getIdToken } = await import('../lib/firebase-client.js');
+  const { initFirebaseAdmin } = await import('../lib/firebase-admin.js');
+  const { HttpClient } = await import('../client/http-transport.js');
+  const { getAuth, deleteUser } = await import('firebase/auth');
+
+  initializeFirebase({
+    apiKey: process.env.FIREBASE_API_KEY!,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN!,
+    projectId: process.env.FIREBASE_PROJECT_ID!,
+  });
+  initFirebaseAdmin();
+
+  const email = `integ-svc-${Date.now()}@test.agentbase.dev`;
+  const password = 'IntegSvc!2026secure';
+
+  await signUp(email, password);
+  const idToken = (await getIdToken())!;
+
+  const http = new HttpClient({
+    baseUrl: E1_BASE_URL,
+    auth: { type: 'bearer', token: idToken },
+  });
+
+  const cleanup = async () => {
+    try {
+      const auth = getAuth();
+      if (auth.currentUser) {
+        await deleteUser(auth.currentUser);
+      }
+    } catch {
+      // ignore
+    }
+  };
+
+  return { http, email, password, idToken, cleanup };
+}

@@ -97,7 +97,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 1
+    tasks_completed: 2
     tasks_total: 4
     notes: |
       Auth guards, authenticated SvcClient, AppClient workflows, extended HttpClient — all against live e1 API.
@@ -502,12 +502,12 @@ tasks:
 
     - id: task-44
       name: Authenticated SvcClient tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T06:15:00Z
       file: agent/tasks/milestone-7-e2e-service-client-tests/task-44-svc-client-integ.md
       estimated_hours: 3
-      completed_date: null
-      notes: "AuthSvc.login, ProfilesSvc, TokensSvc lifecycle, SettingsSvc, SearchSvc against e1. Depends: T43"
+      completed_date: 2026-03-16T06:16:00Z
+      notes: "8 tests: AuthSvc login/session, ProfilesSvc checkUsername/list, SearchSvc users/groups, NotificationsSvc list/unreadCount. Added createAuthenticatedE1Client helper."
 
     - id: task-45
       name: AppClient workflow tests
