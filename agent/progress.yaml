@@ -97,7 +97,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 0
+    tasks_completed: 1
     tasks_total: 4
     notes: |
       Auth guards, authenticated SvcClient, AppClient workflows, extended HttpClient — all against live e1 API.
@@ -493,12 +493,12 @@ tasks:
   milestone_7:
     - id: task-43
       name: Auth guards integration tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T06:13:00Z
       file: agent/tasks/milestone-7-e2e-service-client-tests/task-43-auth-guards-integ.md
       estimated_hours: 1
-      completed_date: null
-      notes: "requireAuth, requireAdmin, isAdmin with real sessions"
+      completed_date: 2026-03-16T06:14:00Z
+      notes: "7 tests: requireAuth pass/fail, requireAdmin pass/forbidden, isAdmin true/false/unauthed"
 
     - id: task-44
       name: Authenticated SvcClient tests
