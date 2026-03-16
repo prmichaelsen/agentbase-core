@@ -1,6 +1,7 @@
 // Logger & sanitization
 export {
   createLogger,
+  setLoggerBackend,
   sanitizeToken,
   sanitizeEmail,
   sanitizeUserId,
@@ -10,6 +11,7 @@ export {
   dbLogger,
   chatLogger,
 } from './logger.js'
+export type { LoggerBackend, LoggerBackendFactory } from './logger.js'
 
 // Firebase wrappers
 export { initFirebaseAdmin } from './firebase-admin.js'

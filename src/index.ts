@@ -32,6 +32,7 @@ export type { ErrorKind } from './errors/index.js'
 export {
   // Logger
   createLogger,
+  setLoggerBackend,
   sanitizeToken,
   sanitizeEmail,
   sanitizeUserId,
@@ -77,6 +78,7 @@ export {
 
 export type { User, UserCredential, Auth } from './lib/index.js'
 export type { RateLimitConfig, RateLimitResult } from './lib/index.js'
+export type { LoggerBackend, LoggerBackendFactory } from './lib/index.js'
 
 // Config
 export { loadConfig, validateConfig } from './config/index.js'

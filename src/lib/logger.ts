@@ -7,6 +7,41 @@ interface LogContext {
 }
 
 /**
+ * Backend interface for pluggable logger implementations.
+ * Consumers can provide pino, winston, or any logger that satisfies this shape.
+ */
+export interface LoggerBackend {
+  debug(message: string, context?: Record<string, unknown>): void;
+  info(message: string, context?: Record<string, unknown>): void;
+  warn(message: string, context?: Record<string, unknown>): void;
+  error(message: string, context?: Record<string, unknown>): void;
+}
+
+/**
+ * Factory that creates a LoggerBackend for a given context name.
+ * Use this to integrate structured loggers like pino:
+ *
+ * @example
+ * ```ts
+ * import pino from 'pino';
+ * const root = pino();
+ * setLoggerBackend((context) => root.child({ context }));
+ * ```
+ */
+export type LoggerBackendFactory = (context: string) => LoggerBackend;
+
+let _backendFactory: LoggerBackendFactory | null = null;
+
+/**
+ * Set a custom logger backend factory.
+ * All existing and future loggers created via createLogger() will use this backend.
+ * Pass `null` to reset to the default console-based logger.
+ */
+export function setLoggerBackend(factory: LoggerBackendFactory | null): void {
+  _backendFactory = factory;
+}
+
+/**
  * Sanitization utilities for secure logging
  */
 
@@ -74,10 +109,20 @@ class Logger {
     this.context = context;
   }
 
+  private getBackend(): LoggerBackend | null {
+    return _backendFactory ? _backendFactory(this.context) : null;
+  }
+
   private log(level: LogLevel, message: string, data?: LogContext) {
-    // Sanitize data before logging
     const sanitizedData = data ? sanitizeObject(data) : undefined;
 
+    const backend = this.getBackend();
+    if (backend) {
+      backend[level](message, sanitizedData);
+      return;
+    }
+
+    // Default console-based logging
     const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
 
     switch (level) {
@@ -109,13 +154,15 @@ class Logger {
   }
 
   error(message: string, error?: Error | any, data?: LogContext) {
-    const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
-
-    this.log('error', message, {
+    const sanitizedData = {
       ...data,
       error: error?.message || error,
-      stack: isDevelopment ? error?.stack : undefined,
-    });
+      ...(typeof process !== 'undefined' && process.env?.NODE_ENV === 'development'
+        ? { stack: error?.stack }
+        : {}),
+    };
+
+    this.log('error', message, sanitizedData);
   }
 }
 

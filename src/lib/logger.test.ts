@@ -5,6 +5,7 @@ import {
   sanitizeUserId,
   sanitizeObject,
   createLogger,
+  setLoggerBackend,
   authLogger,
   apiLogger,
   dbLogger,
@@ -177,6 +178,105 @@ describe('createLogger', () => {
     logger.info('data', { password: 'secret', name: 'ok' })
     const call = (console.log as any).mock.calls[0]
     expect(call[2]).toEqual({ password: '[REDACTED]', name: 'ok' })
+  })
+})
+
+describe('setLoggerBackend', () => {
+  afterEach(() => {
+    setLoggerBackend(null)
+    vi.restoreAllMocks()
+  })
+
+  it('routes logs to custom backend when set', () => {
+    const backend = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }
+    setLoggerBackend(() => backend)
+
+    const logger = createLogger('Custom')
+    logger.info('hello', { name: 'value' })
+
+    expect(backend.info).toHaveBeenCalledWith('hello', { name: 'value' })
+  })
+
+  it('passes context name to factory', () => {
+    const factory = vi.fn(() => ({
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }))
+    setLoggerBackend(factory)
+
+    const logger = createLogger('MyContext')
+    logger.info('test')
+
+    expect(factory).toHaveBeenCalledWith('MyContext')
+  })
+
+  it('sanitizes data before passing to backend', () => {
+    const backend = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }
+    setLoggerBackend(() => backend)
+
+    const logger = createLogger('Test')
+    logger.info('data', { password: 'secret', name: 'ok' })
+
+    expect(backend.info).toHaveBeenCalledWith('data', { password: '[REDACTED]', name: 'ok' })
+  })
+
+  it('does not call console when backend is set', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    const backend = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }
+    setLoggerBackend(() => backend)
+
+    const logger = createLogger('Test')
+    logger.info('hello')
+
+    expect(console.log).not.toHaveBeenCalled()
+  })
+
+  it('reverts to console when reset to null', () => {
+    const backend = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }
+    setLoggerBackend(() => backend)
+    setLoggerBackend(null)
+
+    vi.spyOn(console, 'log').mockImplementation(() => {})
+    const logger = createLogger('Test')
+    logger.info('hello')
+
+    expect(console.log).toHaveBeenCalled()
+    expect(backend.info).not.toHaveBeenCalled()
+  })
+
+  it('affects pre-configured loggers', () => {
+    const backend = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+      error: vi.fn(),
+    }
+    setLoggerBackend(() => backend)
+
+    authLogger.info('auth message')
+    expect(backend.info).toHaveBeenCalledWith('auth message', undefined)
   })
 })
 
