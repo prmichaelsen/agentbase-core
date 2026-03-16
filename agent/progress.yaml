@@ -3,11 +3,10 @@
 
 project:
   name: agentbase-core
-  version: 0.1.1
+  version: 0.3.0
   started: 2026-03-15
   status: in_progress
-  current_milestone: done
-  status: completed
+  current_milestone: M6
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
 
@@ -76,6 +75,19 @@ milestones:
     tasks_total: 11
     notes: |
       Full client SDK for agentbase.me. OpenAPI 3.1 spec (~135 endpoints), type generation, HTTP transport, SvcClient, AppClient, OAuth helpers.
+
+  - id: M6
+    name: E1 Integration Tests
+    file: agent/milestones/milestone-6-e1-integration-tests.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 1
+    tasks_completed: 0
+    tasks_total: 5
+    notes: |
+      Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
 
 tasks:
   milestone_1:
@@ -416,12 +428,58 @@ tasks:
       completed_date: null
       notes: "New /client entry point, README update. Depends: T29-T31"
 
+  milestone_6:
+    - id: task-38
+      name: Integration test infrastructure
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-6-e1-integration-tests/task-38-integration-test-infrastructure.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "vitest.integration.config.ts, dotenv, skip-if-no-credentials helpers"
+
+    - id: task-39
+      name: Firebase client auth integration tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-6-e1-integration-tests/task-39-firebase-client-auth-integ.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "signInAnonymously, getIdToken against real e1 Firebase. Depends: T38"
+
+    - id: task-40
+      name: Firebase admin + session integration tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-6-e1-integration-tests/task-40-firebase-admin-session-integ.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "Full auth flow: anonymous sign-in → ID token → session cookie → getServerSession. Depends: T38, T39"
+
+    - id: task-41
+      name: Config loading integration tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-6-e1-integration-tests/task-41-config-loading-integ.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "loadConfig() + validateConfig() against real .env.e1.local. Depends: T38"
+
+    - id: task-42
+      name: Client SDK live API tests (future)
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-6-e1-integration-tests/task-42-client-sdk-live-api.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "HttpClient + SvcClient against running agentbase.me e1. Deferred until e1 API stable. Depends: T38, T40"
+
 documentation:
   design_documents: 0
-  milestone_documents: 5
+  milestone_documents: 6
   pattern_documents: 31
-  task_documents: 33
-  last_updated: 2026-03-15
+  task_documents: 38
+  last_updated: 2026-03-16
 
 progress:
   planning: 100
@@ -441,13 +499,22 @@ recent_work:
       - "Audit 2: pattern compliance (65% score)"
       - "Planned M2-M5: 22 new tasks across 4 milestones"
 
+recent_work:
+  - date: 2026-03-16
+    description: |
+      Pluggable logger backend, Logger/LoggerBackend unification, planned M6.
+    items:
+      - "0.2.0: setLoggerBackend() for pluggable logger (pino, winston, etc.)"
+      - "0.3.0: Unified Logger → LoggerBackend (breaking: removed Logger type alias)"
+      - "Audit 5: agentbase.me port gaps & drift"
+      - "Planned M6: E1 integration tests (5 tasks)"
+
 next_steps:
-  - "M2 T12: Create error type hierarchy (CRITICAL)"
-  - "M2 T13-T14: Refactor guards + session/rate-limiter errors"
-  - "M2 T15: Test error types"
-  - "M3: Service interfaces + state tracking"
-  - "M4: Result type + logging + coverage"
-  - "M5: OpenAPI spec + client SDK (biggest effort)"
+  - "M6 T38: Integration test infrastructure (vitest config, env helpers)"
+  - "M6 T39: Firebase client auth integ tests"
+  - "M6 T40: Firebase admin + session integ tests (highest value)"
+  - "M6 T41: Config loading integ tests"
+  - "M6 T42: Client SDK live API tests (deferred)"
 
 notes:
   - Project is a shared library consumed by other agentbase projects
