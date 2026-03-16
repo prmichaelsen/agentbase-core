@@ -79,12 +79,12 @@ milestones:
   - id: M6
     name: E1 Integration Tests
     file: agent/milestones/milestone-6-e1-integration-tests.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-16
+    completed: 2026-03-16
     estimated_weeks: 1
-    tasks_completed: 4
+    tasks_completed: 5
     tasks_total: 5
     notes: |
       Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
@@ -469,13 +469,13 @@ tasks:
       notes: "5 tests: loadConfig populates all fields, validateConfig passes for admin/client/both, throws for empty config"
 
     - id: task-42
-      name: Client SDK live API tests (future)
-      status: not_started
-      started: null
+      name: Client SDK live API tests
+      status: completed
+      started: 2026-03-16T05:47:00Z
       file: agent/tasks/milestone-6-e1-integration-tests/task-42-client-sdk-live-api.md
       estimated_hours: 3
-      completed_date: null
-      notes: "HttpClient + SvcClient against running agentbase.me e1. Deferred until e1 API stable. Depends: T38, T40"
+      completed_date: 2026-03-16T05:48:00Z
+      notes: "6 tests: HttpClient GET, AuthSvc.getSession, throwOnError, invalid auth, 404 handling against https://e1.agentbase.me"
 
 documentation:
   design_documents: 0
