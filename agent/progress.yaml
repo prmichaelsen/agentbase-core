@@ -84,7 +84,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 1
+    tasks_completed: 2
     tasks_total: 5
     notes: |
       Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
@@ -441,12 +441,13 @@ tasks:
 
     - id: task-39
       name: Firebase client auth integration tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T05:32:00Z
       file: agent/tasks/milestone-6-e1-integration-tests/task-39-firebase-client-auth-integ.md
       estimated_hours: 2
       completed_date: null
-      notes: "signInAnonymously, getIdToken against real e1 Firebase. Depends: T38"
+      completed_date: 2026-03-16T05:34:00Z
+      notes: "6 tests: signUp, signIn, getIdToken, getCurrentUser, logout against real e1 Firebase"
 
     - id: task-40
       name: Firebase admin + session integration tests

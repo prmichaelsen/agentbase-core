@@ -42,5 +42,11 @@ export function getE1Config(): AgentbaseConfig {
 /**
  * Helper to conditionally run a describe block only when e1 credentials exist.
  * Usage: describeIfE1('my tests', () => { ... })
+ *
+ * Import `describe` from vitest in your test file, then pass it:
+ *   import { describe } from 'vitest';
+ *   const e1Describe = makeDescribeIfE1(describe);
  */
-export const describeIfE1 = hasE1Credentials() ? describe : describe.skip;
+export function makeDescribeIfE1(desc: typeof globalThis.describe) {
+  return hasE1Credentials() ? desc : desc.skip;
+}
