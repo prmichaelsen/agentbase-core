@@ -84,7 +84,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 2
+    tasks_completed: 3
     tasks_total: 5
     notes: |
       Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
@@ -451,12 +451,13 @@ tasks:
 
     - id: task-40
       name: Firebase admin + session integration tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T05:35:00Z
       file: agent/tasks/milestone-6-e1-integration-tests/task-40-firebase-admin-session-integ.md
       estimated_hours: 3
       completed_date: null
-      notes: "Full auth flow: anonymous sign-in → ID token → session cookie → getServerSession. Depends: T38, T39"
+      completed_date: 2026-03-16T05:36:00Z
+      notes: "6 tests: createSessionCookie, getServerSession, isAuthenticated, null cases, ID token fallback. Fixed firebase-admin.ts to read service account from file path."
 
     - id: task-41
       name: Config loading integration tests
