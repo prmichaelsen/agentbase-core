@@ -84,7 +84,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 3
+    tasks_completed: 4
     tasks_total: 5
     notes: |
       Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
@@ -461,12 +461,12 @@ tasks:
 
     - id: task-41
       name: Config loading integration tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T05:37:00Z
       file: agent/tasks/milestone-6-e1-integration-tests/task-41-config-loading-integ.md
       estimated_hours: 1
-      completed_date: null
-      notes: "loadConfig() + validateConfig() against real .env.e1.local. Depends: T38"
+      completed_date: 2026-03-16T05:37:00Z
+      notes: "5 tests: loadConfig populates all fields, validateConfig passes for admin/client/both, throws for empty config"
 
     - id: task-42
       name: Client SDK live API tests (future)
