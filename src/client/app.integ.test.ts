@@ -62,10 +62,27 @@ describeIfE1('AppClient workflows (e1 integration)', () => {
   });
 
   it('oauthExchangeAndGetSession without OAuthClient returns InternalError', async () => {
-    // AppClient created without oauth param
     const res = await app.oauthExchangeAndGetSession('code', 'http://localhost/callback');
 
     expect(res.error).not.toBeNull();
     expect(res.error!.message).toContain('OAuthClient not configured');
+  });
+
+  it('searchAndFetchMemories returns a response without throwing', async () => {
+    const res = await app.searchAndFetchMemories('test', 3);
+
+    expect(res).toBeDefined();
+    expect(res.data !== null || res.error !== null).toBe(true);
+  });
+
+  it('createGroupAndInvite creates a group', async () => {
+    const res = await app.createGroupAndInvite(`integ-app-group-${Date.now()}`, 'test group', []);
+
+    expect(res).toBeDefined();
+    // Clean up group if created
+    if (res.data && (res.data as any).group?.id) {
+      const { GroupsSvc: G } = await import('./svc.js');
+      await new G(http).delete((res.data as any).group.id);
+    }
   });
 });

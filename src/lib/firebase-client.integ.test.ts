@@ -7,6 +7,8 @@ import {
   getIdToken,
   getCurrentUser,
   logout,
+  resetPassword,
+  onAuthChange,
 } from './firebase-client.js';
 import { getAuth, deleteUser } from 'firebase/auth';
 
@@ -87,5 +89,24 @@ describeIfE1('Firebase Client Auth (e1 integration)', () => {
     expect(await getCurrentUser()).toBeDefined();
     await logout();
     expect(await getCurrentUser()).toBeNull();
+  });
+
+  it('resetPassword does not throw for valid email', async () => {
+    // Re-sign in so we have a valid session for cleanup
+    await signIn(TEST_EMAIL, TEST_PASSWORD);
+    await expect(resetPassword(TEST_EMAIL)).resolves.toBeUndefined();
+  });
+
+  it('onAuthChange fires callback with current user', async () => {
+    await signIn(TEST_EMAIL, TEST_PASSWORD);
+
+    const result = await new Promise<boolean>((resolve) => {
+      const unsubscribe = onAuthChange((user) => {
+        unsubscribe();
+        resolve(user !== null);
+      });
+    });
+
+    expect(result).toBe(true);
   });
 });

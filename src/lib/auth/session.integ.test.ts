@@ -6,6 +6,7 @@ import {
   getServerSession,
   isAuthenticated,
   createSessionCookie,
+  revokeSession,
 } from './session.js';
 import { getAuth, deleteUser } from 'firebase/auth';
 
@@ -91,6 +92,18 @@ describeIfE1('Firebase Admin + Session (e1 integration)', () => {
     const request = makeRequest('invalid-garbage-cookie');
     const session = await getServerSession(request);
     expect(session).toBeNull();
+  });
+
+  it('revokeSession does not throw for valid session', async () => {
+    const cookie = await createSessionCookie(idToken);
+    const request = makeRequest(cookie);
+
+    await expect(revokeSession(request)).resolves.toBeUndefined();
+  });
+
+  it('revokeSession does not throw for unauthenticated request', async () => {
+    const request = makeRequest();
+    await expect(revokeSession(request)).resolves.toBeUndefined();
   });
 
   it('getServerSession falls back to ID token verification', async () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { loadE1Env, makeDescribeIfE1, createAuthenticatedE1Client } from '../test-utils/integ-helpers.js';
-import { AuthSvc, ProfilesSvc, SearchSvc, NotificationsSvc } from './svc.js';
+import { AuthSvc, ProfilesSvc, SearchSvc, NotificationsSvc, TokensSvc, GroupsSvc, ConversationsSvc, MemoriesSvc, UsageSvc } from './svc.js';
 import type { HttpClient } from './http-transport.js';
 
 loadE1Env();
@@ -27,8 +27,6 @@ describeIfE1('SvcClient (e1 integration)', () => {
       const auth = new AuthSvc(http);
       const res = await auth.login({ idToken });
 
-      // Login may succeed or return an error depending on e1 state,
-      // but it should return a valid SdkResponse
       expect(res.status).toBeGreaterThan(0);
     });
 
@@ -38,6 +36,14 @@ describeIfE1('SvcClient (e1 integration)', () => {
 
       expect(res.status).toBe(200);
       expect(res.data).toBeDefined();
+    });
+
+    it('logout returns a response', async () => {
+      const auth = new AuthSvc(http);
+      const res = await auth.logout();
+
+      expect(res).toBeDefined();
+      expect(res.status).toBeGreaterThan(0);
     });
   });
 
@@ -87,6 +93,100 @@ describeIfE1('SvcClient (e1 integration)', () => {
     it('unreadCount returns a response', async () => {
       const notifications = new NotificationsSvc(http);
       const res = await notifications.unreadCount();
+
+      expect(res.status).toBeGreaterThan(0);
+    });
+
+    it('markAllRead returns a response', async () => {
+      const notifications = new NotificationsSvc(http);
+      const res = await notifications.markAllRead();
+
+      expect(res.status).toBeGreaterThan(0);
+    });
+  });
+
+  describe('TokensSvc', () => {
+    it('list returns a response', async () => {
+      const tokens = new TokensSvc(http);
+      const res = await tokens.list();
+
+      expect(res).toBeDefined();
+      expect(res.data !== null || res.error !== null).toBe(true);
+    });
+
+    it('create returns a response without throwing', async () => {
+      const tokens = new TokensSvc(http);
+      const res = await tokens.create('integ-test-token');
+
+      expect(res).toBeDefined();
+      // Clean up if created
+      if (res.data && (res.data as any).id) {
+        await tokens.delete((res.data as any).id);
+      }
+    });
+  });
+
+  describe('GroupsSvc — CRUD lifecycle', () => {
+    it('create → get → list → update → delete', async () => {
+      const groups = new GroupsSvc(http);
+      const name = `integ-group-${Date.now()}`;
+
+      // Create
+      const createRes = await groups.create({ name, description: 'integ test' });
+      expect(createRes.status).toBeGreaterThan(0);
+
+      if (createRes.data && (createRes.data as any).id) {
+        const groupId = (createRes.data as any).id;
+
+        // Get
+        const getRes = await groups.get(groupId);
+        expect(getRes.status).toBeGreaterThan(0);
+
+        // List
+        const listRes = await groups.list();
+        expect(listRes.status).toBeGreaterThan(0);
+
+        // Update
+        const updateRes = await groups.update(groupId, { description: 'updated' });
+        expect(updateRes.status).toBeGreaterThan(0);
+
+        // Delete (cleanup)
+        const deleteRes = await groups.delete(groupId);
+        expect(deleteRes.status).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  describe('ConversationsSvc', () => {
+    it('list returns a response', async () => {
+      const convos = new ConversationsSvc(http);
+      const res = await convos.list();
+
+      expect(res.status).toBeGreaterThan(0);
+    });
+  });
+
+  describe('MemoriesSvc', () => {
+    it('feed returns a response', async () => {
+      const memories = new MemoriesSvc(http);
+      const res = await memories.feed();
+
+      expect(res.status).toBeGreaterThan(0);
+    });
+
+    it('search returns a response without throwing', async () => {
+      const memories = new MemoriesSvc(http);
+      const res = await memories.search({ query: 'test' });
+
+      expect(res).toBeDefined();
+      expect(res.data !== null || res.error !== null).toBe(true);
+    });
+  });
+
+  describe('UsageSvc', () => {
+    it('get returns a response', async () => {
+      const usage = new UsageSvc(http);
+      const res = await usage.get();
 
       expect(res.status).toBeGreaterThan(0);
     });
