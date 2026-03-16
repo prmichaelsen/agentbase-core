@@ -6,7 +6,7 @@ project:
   version: 0.3.0
   started: 2026-03-15
   status: in_progress
-  current_milestone: M6
+  current_milestone: M7
   description: |
     Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities. Published as @prmichaelsen/agentbase-core.
 
@@ -88,6 +88,19 @@ milestones:
     tasks_total: 5
     notes: |
       Integration tests against real agentbase-e1 Firebase environment. Validates auth flow, Firebase wrappers, session management, config loading end-to-end.
+
+  - id: M7
+    name: E2E Service Client Tests
+    file: agent/milestones/milestone-7-e2e-service-client-tests.md
+    status: not_started
+    progress: 0
+    started: null
+    completed: null
+    estimated_weeks: 1
+    tasks_completed: 0
+    tasks_total: 4
+    notes: |
+      Auth guards, authenticated SvcClient, AppClient workflows, extended HttpClient — all against live e1 API.
 
 tasks:
   milestone_1:
@@ -477,11 +490,48 @@ tasks:
       completed_date: 2026-03-16T05:48:00Z
       notes: "6 tests: HttpClient GET, AuthSvc.getSession, throwOnError, invalid auth, 404 handling against https://e1.agentbase.me"
 
+  milestone_7:
+    - id: task-43
+      name: Auth guards integration tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-7-e2e-service-client-tests/task-43-auth-guards-integ.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "requireAuth, requireAdmin, isAdmin with real sessions"
+
+    - id: task-44
+      name: Authenticated SvcClient tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-7-e2e-service-client-tests/task-44-svc-client-integ.md
+      estimated_hours: 3
+      completed_date: null
+      notes: "AuthSvc.login, ProfilesSvc, TokensSvc lifecycle, SettingsSvc, SearchSvc against e1. Depends: T43"
+
+    - id: task-45
+      name: AppClient workflow tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-7-e2e-service-client-tests/task-45-app-client-integ.md
+      estimated_hours: 2
+      completed_date: null
+      notes: "loginAndGetSession, getFullProfile, startDm end-to-end. Depends: T44"
+
+    - id: task-46
+      name: Extended HttpClient + error tests
+      status: not_started
+      started: null
+      file: agent/tasks/milestone-7-e2e-service-client-tests/task-46-http-client-extended-integ.md
+      estimated_hours: 1
+      completed_date: null
+      notes: "POST/PATCH/DELETE, bearer/apiKey auth, error codes, timeout"
+
 documentation:
   design_documents: 0
-  milestone_documents: 6
+  milestone_documents: 7
   pattern_documents: 31
-  task_documents: 38
+  task_documents: 42
   last_updated: 2026-03-16
 
 progress:
@@ -492,32 +542,29 @@ progress:
   overall: 33
 
 recent_work:
+  - date: 2026-03-16
+    description: |
+      Logger refactor, M6 complete, planned M7.
+    items:
+      - "0.2.0: setLoggerBackend() for pluggable logger (pino, winston, etc.)"
+      - "0.3.0: Unified Logger → LoggerBackend (breaking)"
+      - "M6 complete: 5 tasks, 23 integ tests against e1"
+      - "Audit 5: agentbase.me port gaps"
+      - "Audit 6: e2e testable items inventory"
+      - "Planned M7: E2E service client tests (4 tasks)"
+
   - date: 2026-03-15
     description: |
       M1 complete. Audited patterns, planned M2-M5.
     items:
       - "M1 complete: 11 tasks, 132 tests, build verified, published"
-      - "Installed 31 core-sdk patterns"
-      - "Audit 1: core-sdk patterns catalog"
-      - "Audit 2: pattern compliance (65% score)"
       - "Planned M2-M5: 22 new tasks across 4 milestones"
 
-recent_work:
-  - date: 2026-03-16
-    description: |
-      Pluggable logger backend, Logger/LoggerBackend unification, planned M6.
-    items:
-      - "0.2.0: setLoggerBackend() for pluggable logger (pino, winston, etc.)"
-      - "0.3.0: Unified Logger → LoggerBackend (breaking: removed Logger type alias)"
-      - "Audit 5: agentbase.me port gaps & drift"
-      - "Planned M6: E1 integration tests (5 tasks)"
-
 next_steps:
-  - "M6 T38: Integration test infrastructure (vitest config, env helpers)"
-  - "M6 T39: Firebase client auth integ tests"
-  - "M6 T40: Firebase admin + session integ tests (highest value)"
-  - "M6 T41: Config loading integ tests"
-  - "M6 T42: Client SDK live API tests (deferred)"
+  - "M7 T43: Auth guards integ tests (1h)"
+  - "M7 T44: Authenticated SvcClient tests (3h, highest value)"
+  - "M7 T45: AppClient workflow tests (2h)"
+  - "M7 T46: Extended HttpClient + error tests (1h)"
 
 notes:
   - Project is a shared library consumed by other agentbase projects
