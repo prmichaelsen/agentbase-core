@@ -3,7 +3,6 @@
 
 // Services
 export { BaseService } from './services/base.service.js'
-export type { Logger } from './services/base.service.js'
 export { ConfirmationTokenService } from './services/confirmation-token.service.js'
 export type { PendingAction } from './services/confirmation-token.service.js'
 

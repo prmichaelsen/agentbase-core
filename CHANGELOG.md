@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0] - 2026-03-16
+
+### Changed
+- **BREAKING**: Remove `Logger` type — use `LoggerBackend` instead (same shape, single source of truth from `logger.ts`)
+- `BaseService` now imports `LoggerBackend` from `logger.ts` instead of defining its own duplicate interface
+
+### Migration
+- Replace `import type { Logger } from '@prmichaelsen/agentbase-core'` with `import type { LoggerBackend } from '@prmichaelsen/agentbase-core'`
+
 ## [0.2.0] - 2026-03-16
 
 ### Added

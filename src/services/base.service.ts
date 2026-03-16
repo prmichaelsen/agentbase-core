@@ -1,16 +1,7 @@
 // src/services/base.service.ts
 // Pattern: Service Base (core-sdk.service-base.md)
 
-/**
- * Minimal structured logger interface.
- * Wire in winston, pino, or any other logger at the container level.
- */
-export interface Logger {
-  debug(message: string, context?: Record<string, unknown>): void;
-  info(message: string, context?: Record<string, unknown>): void;
-  warn(message: string, context?: Record<string, unknown>): void;
-  error(message: string, context?: Record<string, unknown>): void;
-}
+import type { LoggerBackend } from '../lib/logger.js';
 
 export enum ServiceState {
   Uninitialized = 'uninitialized',
@@ -29,7 +20,7 @@ export enum ServiceState {
  *
  * @example
  * class UserService extends BaseService<ServiceConfig> {
- *   constructor(config: ServiceConfig, logger: Logger) {
+ *   constructor(config: ServiceConfig, logger: LoggerBackend) {
  *     super(config, logger);
  *   }
  *
@@ -44,7 +35,7 @@ export abstract class BaseService<TConfig = unknown> {
 
   constructor(
     protected readonly config: TConfig,
-    protected readonly logger: Logger
+    protected readonly logger: LoggerBackend
   ) {
     this.name = this.constructor.name;
   }
