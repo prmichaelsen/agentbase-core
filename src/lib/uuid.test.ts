@@ -22,4 +22,16 @@ describe('generateUUID', () => {
     const b = generateUUID()
     expect(a).not.toBe(b)
   })
+
+  it('fallback works when crypto.randomUUID is unavailable', () => {
+    const original = crypto.randomUUID
+    // @ts-expect-error — remove randomUUID to trigger fallback
+    crypto.randomUUID = undefined
+    try {
+      const uuid = generateUUID()
+      expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+    } finally {
+      crypto.randomUUID = original
+    }
+  })
 })

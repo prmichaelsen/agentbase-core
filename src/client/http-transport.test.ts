@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { HttpClient } from './http-transport.js'
+import { HttpClient, createErrorResponse } from './http-transport.js'
 import { UnauthorizedError, RateLimitError, ExternalError } from '../errors/index.js'
 
 const mockFetch = vi.fn()
@@ -92,6 +92,50 @@ describe('HttpClient', () => {
       expect(result.error!.message).toBe('Failed to fetch')
       expect(result.status).toBe(0)
     })
+
+    it('handles AppError thrown during request', async () => {
+      const appError = new UnauthorizedError('thrown directly')
+      mockFetch.mockRejectedValue(appError)
+      const result = await client.get('/foo')
+      expect(result.error).toBe(appError)
+      expect(result.status).toBe(0)
+    })
+
+    it('handles non-Error throws', async () => {
+      mockFetch.mockRejectedValue('string error')
+      const result = await client.get('/foo')
+      expect(result.error).toBeInstanceOf(ExternalError)
+      expect(result.error!.message).toBe('Network error')
+    })
+
+    it('handles error response with non-JSON body', async () => {
+      mockFetch.mockResolvedValue(new Response('Not Found', {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain' },
+      }))
+      const result = await client.get('/foo')
+      expect(result.error).toBeInstanceOf(ExternalError)
+      expect(result.status).toBe(404)
+    })
+
+    it('handles error response with no error field in JSON', async () => {
+      mockFetch.mockResolvedValue(jsonResponse({ message: 'oops' }, 500))
+      const result = await client.get('/foo')
+      expect(result.error).toBeInstanceOf(ExternalError)
+      // Falls back to statusText
+      expect(result.status).toBe(500)
+    })
+
+    it('custom headers are sent', async () => {
+      mockFetch.mockResolvedValue(jsonResponse({}))
+      const customClient = new HttpClient({
+        baseUrl: 'https://api.test',
+        headers: { 'X-Custom': 'value' },
+      })
+      await customClient.get('/foo')
+      const headers = mockFetch.mock.calls[0][1].headers
+      expect(headers['X-Custom']).toBe('value')
+    })
   })
 
   describe('auth strategies', () => {
@@ -136,6 +180,33 @@ describe('HttpClient', () => {
       })
       await authedClient.get('/foo')
       expect(mockFetch.mock.calls[0][1].credentials).toBe('include')
+    })
+  })
+
+  describe('SdkResponse', () => {
+    it('throwOnError returns data on success', async () => {
+      mockFetch.mockResolvedValue(jsonResponse({ ok: true }))
+      const result = await client.get<{ ok: boolean }>('/foo')
+      const { data, status } = result.throwOnError()
+      expect(data.ok).toBe(true)
+      expect(status).toBe(200)
+    })
+
+    it('throwOnError throws on error', async () => {
+      mockFetch.mockResolvedValue(jsonResponse({ error: 'fail' }, 500))
+      const result = await client.get('/foo')
+      expect(() => result.throwOnError()).toThrow()
+    })
+  })
+
+  describe('createErrorResponse', () => {
+    it('creates an error SdkResponse', () => {
+      const error = new ExternalError('test error')
+      const res = createErrorResponse(error, 502)
+      expect(res.data).toBeNull()
+      expect(res.error).toBe(error)
+      expect(res.status).toBe(502)
+      expect(() => res.throwOnError()).toThrow()
     })
   })
 

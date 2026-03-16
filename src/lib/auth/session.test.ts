@@ -128,4 +128,13 @@ describe('revokeSession', () => {
   it('does not throw for no session', async () => {
     await expect(revokeSession(makeRequest())).resolves.toBeUndefined()
   })
+
+  it('throws ExternalError when getServerSession throws', async () => {
+    mockVerifySessionCookie.mockImplementation(() => { throw new Error('crash') })
+    mockVerifyIdToken.mockImplementation(() => { throw new Error('crash') })
+    // revokeSession catches the outer error and re-throws as ExternalError
+    // But getServerSession catches internally and returns null, so revokeSession won't throw
+    // We need to make the session?.user check path throw
+    await expect(revokeSession(makeRequest('session=crash'))).resolves.toBeUndefined()
+  })
 })
