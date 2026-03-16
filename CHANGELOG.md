@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0] - 2026-03-16
+
+### Added
+- Firestore collection helpers: all platform-level constants and user-scoped path functions extracted from agentbase.me
+- New `./collections` export entry point: `import { USERS, getUserConversations } from '@prmichaelsen/agentbase-core/collections'`
+- 26 platform-level collection constants (USERS, CREDENTIALS, MCP_SERVERS, etc.)
+- 24 user-scoped path functions (getUserConversations, getUserSubscriptionCollection, etc.)
+- Full unit test coverage for all collections exports
+
 ## [0.4.0] - 2026-03-16
 
 ### Added

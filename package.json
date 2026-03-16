@@ -1,6 +1,6 @@
 {
   "name": "@prmichaelsen/agentbase-core",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Shared service infrastructure for agentbase projects — BaseService, auth, Firebase wrappers, logging, and common utilities",
   "type": "module",
   "main": "dist/index.js",
@@ -37,6 +37,10 @@
     "./dto": {
       "import": "./dist/dto/index.js",
       "types": "./dist/dto/index.d.ts"
+    },
+    "./collections": {
+      "import": "./dist/collections/index.js",
+      "types": "./dist/collections/index.d.ts"
     }
   },
   "files": [
