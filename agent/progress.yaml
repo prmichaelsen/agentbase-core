@@ -92,12 +92,12 @@ milestones:
   - id: M7
     name: E2E Service Client Tests
     file: agent/milestones/milestone-7-e2e-service-client-tests.md
-    status: not_started
-    progress: 0
-    started: null
-    completed: null
+    status: completed
+    progress: 100
+    started: 2026-03-16
+    completed: 2026-03-16
     estimated_weeks: 1
-    tasks_completed: 3
+    tasks_completed: 4
     tasks_total: 4
     notes: |
       Auth guards, authenticated SvcClient, AppClient workflows, extended HttpClient — all against live e1 API.
@@ -520,12 +520,12 @@ tasks:
 
     - id: task-46
       name: Extended HttpClient + error tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T06:17:00Z
       file: agent/tasks/milestone-7-e2e-service-client-tests/task-46-http-client-extended-integ.md
       estimated_hours: 1
-      completed_date: null
-      notes: "POST/PATCH/DELETE, bearer/apiKey auth, error codes, timeout"
+      completed_date: 2026-03-16T06:18:00Z
+      notes: "5 tests: POST with bearer, apiKey auth, timeout error, concurrent requests"
 
 documentation:
   design_documents: 0
