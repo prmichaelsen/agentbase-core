@@ -97,7 +97,7 @@ milestones:
     started: null
     completed: null
     estimated_weeks: 1
-    tasks_completed: 2
+    tasks_completed: 3
     tasks_total: 4
     notes: |
       Auth guards, authenticated SvcClient, AppClient workflows, extended HttpClient — all against live e1 API.
@@ -511,12 +511,12 @@ tasks:
 
     - id: task-45
       name: AppClient workflow tests
-      status: not_started
-      started: null
+      status: completed
+      started: 2026-03-16T06:16:00Z
       file: agent/tasks/milestone-7-e2e-service-client-tests/task-45-app-client-integ.md
       estimated_hours: 2
-      completed_date: null
-      notes: "loginAndGetSession, getFullProfile, startDm end-to-end. Depends: T44"
+      completed_date: 2026-03-16T06:17:00Z
+      notes: "4 tests: loginAndGetSession success/invalid, clearAllNotifications, oauthExchange without client"
 
     - id: task-46
       name: Extended HttpClient + error tests
